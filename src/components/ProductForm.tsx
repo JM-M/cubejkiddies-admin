@@ -109,7 +109,8 @@ const ProductForm = ({ productId }: Props) => {
   if (categoriesQuery.isLoading || (productId && productQuery.isLoading)) {
     return <PageLoader />;
   }
-  if (productId && productQuery.isError) return <>Error fetching product</>;
+  if (productId && productQuery.isError)
+    return <div>Error fetching product</div>;
 
   const uploading = productMutation.isLoading || uploadingImages;
 
