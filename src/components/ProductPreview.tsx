@@ -51,8 +51,8 @@ const ProductPreview = ({ productId }: Props) => {
     }, []);
   }, [stocks, variant, variantKeys]);
 
-  if (isLoading) return 'Loading...';
-  if (!data) return 'data is not defined';
+  if (isLoading) return <>Loading...</>;
+  if (!data) return <>data is not defined</>;
 
   return (
     <>
