@@ -11,7 +11,11 @@ import ProductVariations from './ProductVariations';
 import ProductDescription from './ProductDescription';
 import useProducts from '../hooks/useProducts';
 
-const ProductPreview: React.FC<{ productId: string }> = ({ productId }) => {
+interface Props {
+  productId: string;
+}
+
+const ProductPreview = ({ productId }: Props) => {
   const [variant, setVariant] = useState<any>({});
 
   const {

@@ -36,7 +36,11 @@ type FieldType =
   | `stocks.${number}.variationCombination`
   | `stocks.${number}.images.${number}`;
 
-const ProductForm: React.FC<{ productId?: string }> = ({ productId }) => {
+interface Props {
+  productId?: string;
+}
+
+const ProductForm = ({ productId }: Props) => {
   const [uploadingImages, setUploadingImages] = useState<boolean>(false);
   const [imageUploadProgress, setImageUploadProgress] = useState<number>();
 

@@ -132,9 +132,9 @@ const ProductTable = ({
 
   if (loading) return <PageLoader />;
 
-  if (!Array.isArray(products)) return 'Page is not an array';
+  if (!Array.isArray(products)) return <>Page is not an array</>;
 
-  if (!products?.length) return 'Page is an empty array';
+  if (!products?.length) return <>Page is an empty array</>;
 
   return (
     <>
