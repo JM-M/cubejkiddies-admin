@@ -29,6 +29,7 @@
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
     "classnames": "^2.3.2",
+    "date-fns": "^2.30.0",
     "firebase": "^10.0.0",
     "ionicons": "^7.0.0",
     "pure-react-carousel": "^1.30.1",

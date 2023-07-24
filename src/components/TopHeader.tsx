@@ -11,7 +11,7 @@ import { logOutOutline } from 'ionicons/icons';
 
 const TopHeader = () => {
   return (
-    <IonHeader className='container ion-no-border'>
+    <IonHeader className='ion-no-border'>
       <IonToolbar>
         <IonButtons slot='start'>
           <IonMenuButton />

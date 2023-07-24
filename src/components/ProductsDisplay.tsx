@@ -74,7 +74,7 @@ const ProductsDisplay = (props: Props) => {
   }
   return (
     <>
-      <div className='w-fit my-5 rounded-lg overflow-hidden'>
+      <div className='w- myfull-5 rounded-lg overflow-hidden'>
         <IonSearchbar
           searchIcon={searchOutline}
           slot='end'

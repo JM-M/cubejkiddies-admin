@@ -19,7 +19,9 @@ import ProductSections from './pages/ProductSections';
 import CreateProductSection from './pages/CreateProductSection';
 import EditProductSection from './pages/EditProductSection';
 import Categories from './pages/Categories';
+import DeliveryPrices from './pages/DeliveryPrices';
 import Users from './pages/Users';
+import User from './pages/User';
 import Login from './pages/Login';
 
 import SideMenu from './components/SideMenu';
@@ -94,7 +96,13 @@ const App: React.FC = () => (
                   component={CreateProductSection}
                 />
                 <Route exact path='/categories' component={Categories} />
+                <Route
+                  exact
+                  path='/delivery-prices'
+                  component={DeliveryPrices}
+                />
                 <Route exact path='/users' component={Users} />
+                <Route exact path='/users/:uid' component={User} />
                 <Route exact path='/login' component={Login} />
                 <Route exact path='/' render={() => <Redirect to='/login' />} />
               </div>

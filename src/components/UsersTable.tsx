@@ -1,34 +1,54 @@
 import { useState } from 'react';
+import { useIonRouter, IonSpinner } from '@ionic/react';
 import { createColumnHelper } from '@tanstack/react-table';
+import { formatDistance } from 'date-fns';
 import Table from './Table';
-
-import { useIonRouter } from '@ionic/react';
+import TableController from './TableController';
 
 type User = {
-  name: string;
-  date: Date;
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: any;
 };
+
+interface Props {
+  users: User[];
+  totalPages?: number;
+  onPagePrev?: () => void;
+  onPageNext?: () => void;
+  loading?: boolean;
+}
 
 const columnHelper = createColumnHelper<User>();
 
 const columns = [
-  columnHelper.accessor('name', {
+  columnHelper.accessor('firstName', {
     header: 'Name',
-    cell: (name) => <span className='font-medium'>{name.getValue()}</span>,
   }),
-  columnHelper.accessor('date', {
+  columnHelper.accessor('email', {
+    header: 'Email',
+  }),
+  columnHelper.accessor('createdAt', {
     header: 'Created',
-    cell: () => 'May 30, 2023',
+    cell: ({ cell }) => {
+      const userCreationDate = cell.getValue().toDate();
+      const dateDistance = formatDistance(userCreationDate, new Date(), {
+        addSuffix: true,
+      });
+      return dateDistance;
+    },
   }),
 ];
 
-const UsersTable = () => {
-  const [data, setData] = useState(
-    [...Array(10)].map((_, i) => ({
-      name: 'John Doe',
-      date: new Date(),
-    }))
-  ); // fake data
+const UsersTable = ({
+  users,
+  totalPages = 0,
+  onPageNext = () => null,
+  onPagePrev = () => null,
+  loading,
+}: Props) => {
+  const [page, setPage] = useState<number>(1);
 
   const ionRouter = useIonRouter();
 
@@ -36,7 +56,30 @@ const UsersTable = () => {
     ionRouter.push(`/users/${row.original.id}`);
   };
 
-  return <Table data={data} columns={columns} onRowClick={goToUser} />;
+  return (
+    <>
+      <div className='flex flex-col min-h-[300px]'>
+        {users ? (
+          <Table data={users} columns={columns} onRowClick={goToUser} />
+        ) : (
+          <span className='m-auto'>
+            {loading ? (
+              <span className='text-gray-500'>Page not found</span>
+            ) : (
+              <IonSpinner name='circular' />
+            )}
+          </span>
+        )}
+      </div>
+      <TableController
+        page={page}
+        onPageChange={(page) => setPage(page)}
+        onPagePrev={onPagePrev}
+        onPageNext={onPageNext}
+        totalPages={totalPages}
+      />
+    </>
+  );
 };
 
 export default UsersTable;

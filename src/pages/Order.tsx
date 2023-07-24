@@ -3,7 +3,7 @@ import { logoWhatsapp, callOutline, mailOutline } from 'ionicons/icons';
 
 import Page from '../components/Page';
 import OrderCartTable from '../components/OrderCartTable';
-import OrderAddress from '../components/OrderAddress';
+import Address from '../components/Address';
 import StatusSelector from '../components/StatusSelector';
 
 const Order: React.FC<any> = ({ match }) => {
@@ -34,7 +34,7 @@ const Order: React.FC<any> = ({ match }) => {
       <h3 className='mt-6 mb-1 text-gray-500'>Status</h3>
       <StatusSelector />
       <h3 className='mt-6 mb-1 text-gray-500'>Delivery Address</h3>
-      <OrderAddress />
+      <Address />
     </Page>
   );
 };

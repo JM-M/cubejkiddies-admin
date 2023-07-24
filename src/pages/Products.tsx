@@ -9,7 +9,7 @@ const Products: React.FC = () => {
       <IonButton
         routerLink='/products/new'
         fill='outline'
-        className='flex w-fit ml-auto'
+        className='flex w-fit ml-auto mb-5'
       >
         <IonIcon icon={addOutline} className='h-[20px] w-[20px] mr-2' />
         New product

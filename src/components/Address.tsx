@@ -1,4 +1,4 @@
-const OrderAddress = () => {
+const Address = () => {
   return (
     <div>
       <div>45 A Johnson Street</div>
@@ -10,4 +10,4 @@ const OrderAddress = () => {
   );
 };
 
-export default OrderAddress;
+export default Address;

@@ -10,12 +10,13 @@ import {
 } from '@ionic/react';
 import cx from 'classnames';
 
-const links = [
-  'orders',
-  'products',
-  'home-product-sections',
-  'categories',
-  'users',
+const links: { display: string; path: string }[] = [
+  { display: 'Orders', path: '/orders' },
+  { display: 'Delivery prices', path: '/delivery-prices' },
+  { display: 'Products', path: '/products' },
+  { display: 'Home product sections', path: '/home-product-sections' },
+  { display: 'Categories', path: '/categories' },
+  { display: 'Users', path: '/users' },
 ];
 
 const SideMenu = () => {
@@ -27,25 +28,28 @@ const SideMenu = () => {
     <IonMenu type='push' contentId='main-content'>
       <IonHeader className='container ion-no-border bg-gray-200'>
         <IonToolbar color='transparent'>
-          <IonTitle className='ion-no-padding bg-gray-200'>Admin</IonTitle>
+          <IonTitle className='ion-no-padding bg-gray-200'>
+            CubeJKiddies
+          </IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
         <div className='container !pr-0 h-full flex flex-col justify-end pb-20 bg-gray-200'>
           <ul>
-            {links.map((path) => {
-              const active = pathname.startsWith(`/${path}`);
+            {links.map((link) => {
+              const { display, path } = link;
+              const active = pathname.startsWith(`${path}`);
               return (
                 <li key={path}>
                   <IonMenuToggle>
                     <Link
-                      to={`/${path}`}
+                      to={path}
                       className={cx(
-                        'side-menu-link flex items-center h-10 pl-5 ml-5 mb-2 rounded-l-full capitalize',
+                        'side-menu-link flex items-center h-10 pl-5 ml-5 mb-2 rounded-l-full',
                         { 'bg-white': active }
                       )}
                     >
-                      {path.replaceAll('-', ' ')}
+                      {display}
                       {active && (
                         <>
                           <span className='side-menu-link-curve top'></span>
