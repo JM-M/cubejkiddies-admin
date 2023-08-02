@@ -6,11 +6,11 @@ import {
   IonIcon,
   IonInput,
   IonText,
-} from '@ionic/react';
-import { removeOutline } from 'ionicons/icons';
-import cx from 'classnames';
+} from "@ionic/react";
+import { removeOutline } from "ionicons/icons";
+import cx from "classnames";
 
-import ProductImages from './ProductImages';
+import ProductImages from "./ProductImages";
 
 const VariationCombination: React.FC<{
   register: any;
@@ -22,8 +22,8 @@ const VariationCombination: React.FC<{
   error: any;
 }> = ({ register, setValue, index, remove, variations, watch, error = {} }) => {
   return (
-    <div className='mb-8'>
-      <div className='flex items-start gap-3 mb-5'>
+    <div className="mb-8">
+      <div className="flex items-start gap-3 mb-5">
         <span>{index + 1}</span>
         <ProductImages
           onChange={(images: any) => setValue(`stocks.${index}.images`, images)}
@@ -31,7 +31,7 @@ const VariationCombination: React.FC<{
           images={watch(`stocks.${index}.images`)}
           setValue={setValue}
         />
-        <ul className='flex-1 flex flex-col gap-1'>
+        <ul className="flex-1 flex flex-col gap-1">
           {variations &&
             Object.keys(variations).map((key, i) => {
               const variationOptions = variations[key];
@@ -40,8 +40,9 @@ const VariationCombination: React.FC<{
                 <li key={i}>
                   <IonItem>
                     <IonSelect
+                      interface="action-sheet"
                       label={key}
-                      labelPlacement='floating'
+                      labelPlacement="floating"
                       aria-label={key}
                       placeholder={key}
                       {...register(
@@ -54,7 +55,7 @@ const VariationCombination: React.FC<{
                           <IonSelectOption
                             key={i}
                             value={value}
-                            className={cx({ uppercase: key === 'sizes' })}
+                            className={cx({ uppercase: key === "sizes" })}
                           >
                             {value}
                           </IonSelectOption>
@@ -62,7 +63,7 @@ const VariationCombination: React.FC<{
                       })}
                     </IonSelect>
                     {error[`variationCombination.${key}`] && (
-                      <IonText color='danger' slot='end' className='text-xs'>
+                      <IonText color="danger" slot="end" className="text-xs">
                         {error[`variationCombination.${key}`]?.message}
                       </IonText>
                     )}
@@ -73,14 +74,14 @@ const VariationCombination: React.FC<{
           <li>
             <IonItem
               className={cx({
-                'ion-invalid': !!error?.quantity,
-                'ion-valid': !error?.quantity,
+                "ion-invalid": !!error?.quantity,
+                "ion-valid": !error?.quantity,
               })}
             >
               <IonInput
-                type='number'
-                label='Stock'
-                labelPlacement='floating'
+                type="number"
+                label="Stock"
+                labelPlacement="floating"
                 {...register(`stocks.${index}.quantity`)}
                 errorText={error?.quantity?.message}
               />
@@ -89,15 +90,15 @@ const VariationCombination: React.FC<{
         </ul>
       </div>
       <IonButton
-        type='button'
-        fill='outline'
-        className='block h-8 w-fit ml-auto'
+        type="button"
+        fill="outline"
+        className="block h-8 w-fit ml-auto"
         onClick={() => remove(index)}
       >
         <IonIcon
           icon={removeOutline}
-          slot='start'
-          className='h-[20px] w-[20px]'
+          slot="start"
+          className="h-[20px] w-[20px]"
         />
         remove
       </IonButton>

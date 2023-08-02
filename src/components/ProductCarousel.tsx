@@ -1,6 +1,6 @@
-import { IonImg } from '@ionic/react';
-import { CarouselProvider, Slider, Slide } from 'pure-react-carousel';
-import ProductCarouselControls from './ProductCarouselControls';
+import { IonImg } from "@ionic/react";
+import { CarouselProvider, Slider, Slide } from "pure-react-carousel";
+import ProductCarouselControls from "./ProductCarouselControls";
 
 const ProductCarousel: React.FC<{ images: string[]; hasVariant: boolean }> = ({
   images = [],
@@ -8,8 +8,8 @@ const ProductCarousel: React.FC<{ images: string[]; hasVariant: boolean }> = ({
 }) => {
   if (!images.length)
     return (
-      <div className='h-[375px] w-[320px] flex justify-center items-center mb-5 bg-gray-100 text-gray-500 rounded-xl'>
-        No images available for this {hasVariant ? 'variant' : 'product'}
+      <div className="w-full aspect-[3.2/4.0] flex justify-center items-center mb-5 bg-gray-100 text-gray-500 rounded-xl">
+        No images available for this {hasVariant ? "variant" : "product"}
       </div>
     );
 
@@ -17,19 +17,20 @@ const ProductCarousel: React.FC<{ images: string[]; hasVariant: boolean }> = ({
     <div>
       <CarouselProvider
         naturalSlideWidth={100}
-        naturalSlideHeight={76}
+        naturalSlideHeight={120}
         totalSlides={images.length}
+        className="-mr-5"
       >
         <Slider>
           {images.map((image, i) => {
             return (
               <Slide key={i} index={i}>
-                <div className='relative h-[375px] w-[320px] pr-5 overflow-hidden'>
-                  <div className='bg-gray-200 rounded-xl overflow-hidden'>
+                <div className="pr-5">
+                  <div className="relative w-full aspect-[3.2/4.0] bg-gray-200 rounded-xl overflow-hidden">
                     <IonImg
                       src={image}
                       alt={`Slide ${i + 1}`}
-                      className='bg-gray-200'
+                      className="h-full w-full bg-gray-200 object-cover"
                     />
                   </div>
                 </div>

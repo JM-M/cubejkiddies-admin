@@ -178,5 +178,5 @@ ion-popover {
 }
 
 .carousel__slide {
-  @apply pr-5 !pb-5;
+  @apply !pb-5;
 }

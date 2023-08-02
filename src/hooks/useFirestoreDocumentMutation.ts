@@ -1,13 +1,17 @@
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { doc, setDoc, Timestamp } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const useFirestoreDocumentMutation = ({
   collectionName,
   onSuccess = () => null,
+  invalidateCollectionQuery = true,
+  invalidateDocumentQuery = true,
 }: {
   collectionName: string;
   onSuccess?: Function;
+  invalidateCollectionQuery?: boolean;
+  invalidateDocumentQuery?: boolean;
 }) => {
   const queryClient = useQueryClient();
 
@@ -22,24 +26,30 @@ const useFirestoreDocumentMutation = ({
   }) => {
     const docRef = doc(db, collectionName, documentId);
     let formattedDocument = document;
+    const now = Timestamp.fromDate(new Date());
     if (addTimestamp && !document.createdAt) {
-      const createdAt = Timestamp.fromDate(new Date());
-      formattedDocument = { ...document, createdAt };
+      formattedDocument = { ...document, id: documentId, createdAt: now };
+    } else if (addTimestamp) {
+      formattedDocument = { ...document, id: documentId, updatedAt: now };
     }
-    const data = await setDoc(docRef, formattedDocument);
-    return { data, documentId };
+    await setDoc(docRef, formattedDocument);
+    return { data: formattedDocument, documentId };
   };
 
   const firestoreDocumentMutation = useMutation({
-    mutationKey: ['upload-to-collection', collectionName],
+    mutationKey: ["upload-to-collection", collectionName],
     mutationFn: uploadToFirestore,
     onSuccess: ({ data, documentId }) => {
       onSuccess(data);
-      queryClient.invalidateQueries(['collection', collectionName]);
-      queryClient.invalidateQueries([
-        'document',
-        { collectionName, documentId },
-      ]);
+      if (invalidateCollectionQuery) {
+        queryClient.invalidateQueries(["collection", collectionName]);
+      }
+      if (invalidateDocumentQuery) {
+        queryClient.invalidateQueries([
+          "document",
+          { collectionName, documentId },
+        ]);
+      }
     },
   });
 

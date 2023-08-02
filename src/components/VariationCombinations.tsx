@@ -1,8 +1,8 @@
-import { IonButton, IonIcon } from '@ionic/react';
-import { addOutline } from 'ionicons/icons';
-import { Control } from 'react-hook-form/dist/types';
-import { useFieldArray } from 'react-hook-form';
-import VariationCombination from './VariationCombination';
+import { IonButton, IonIcon } from "@ionic/react";
+import { addOutline } from "ionicons/icons";
+import { Control } from "react-hook-form/dist/types";
+import { useFieldArray } from "react-hook-form";
+import VariationCombination from "./VariationCombination";
 
 const VariationCombinations: React.FC<{
   register: any;
@@ -12,13 +12,13 @@ const VariationCombinations: React.FC<{
   watch: any;
   errors: any;
 }> = ({ register, setValue, control, variations, watch, errors = {} }) => {
-  const { fields, append, remove } = useFieldArray({ control, name: 'stocks' });
+  const { fields, append, remove } = useFieldArray({ control, name: "stocks" });
 
   const addImage = () => append({ variationCombinations: {} });
 
   return (
     <div>
-      <ul className='my-5'>
+      <ul className="my-5">
         {fields.map((field, index) => {
           return (
             <li key={field.id}>
@@ -38,8 +38,8 @@ const VariationCombinations: React.FC<{
       {/* <IonButton fill='clear' className='block mb-5'>
         See all images
       </IonButton> */}
-      <IonButton color='secondary' className='block' onClick={addImage}>
-        <IonIcon icon={addOutline} className='h-[20px] w-[20px] mr-2' />
+      <IonButton color="secondary" className="block" onClick={addImage}>
+        <IonIcon icon={addOutline} className="h-[20px] w-[20px] mr-2" />
         Add stock
       </IonButton>
     </div>
