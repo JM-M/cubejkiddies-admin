@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef } from "react";
 import {
   IonButton,
   IonButtons,
@@ -15,9 +15,9 @@ import {
   IonLabel,
   IonIcon,
   IonText,
-} from '@ionic/react';
-import { closeOutline } from 'ionicons/icons';
-import cx from 'classnames';
+} from "@ionic/react";
+import { closeOutline } from "ionicons/icons";
+import cx from "classnames";
 
 interface TypeaheadProps {
   name: string;
@@ -28,6 +28,7 @@ interface TypeaheadProps {
   closeModal?: () => void;
   onSelectionChange?: (item?: any) => void;
   error: any;
+  disabled?: boolean;
 }
 
 const Typeahead = ({
@@ -38,6 +39,7 @@ const Typeahead = ({
   title,
   onSelectionChange = () => null,
   error,
+  disabled = false,
 }: TypeaheadProps) => {
   const [filteredItems, setFilteredItems] = useState<any[]>([...items]);
 
@@ -90,23 +92,24 @@ const Typeahead = ({
     <>
       <IonItem
         className={cx({
-          'ion-invalid': !!error,
-          'ion-valid': !error,
+          "ion-invalid": !!error,
+          "ion-valid": !error,
         })}
         button={true}
         detail={false}
         id={`select-${name}`}
+        disabled={disabled}
       >
         <IonLabel>Category</IonLabel>
-        <div slot='end' id={`selected-${name}`}>
+        <div slot="end" id={`selected-${name}`}>
           {value}
         </div>
       </IonItem>
       {error && (
         <IonText
-          color='danger'
-          slot='end'
-          className='block pt-1 text-left text-xs border-t border-[var(--ion-color-danger)]'
+          color="danger"
+          slot="end"
+          className="block pt-1 text-left text-xs border-t border-[var(--ion-color-danger)]"
         >
           {error?.message}
         </IonText>
@@ -114,9 +117,9 @@ const Typeahead = ({
       <IonModal trigger={`select-${name}`} ref={categoriesModal}>
         <IonHeader>
           <IonToolbar>
-            <IonButtons slot='start'>
+            <IonButtons slot="start">
               <IonButton onClick={cancelChanges}>
-                <IonIcon icon={closeOutline} className='h-[24px] w-[24px]' />
+                <IonIcon icon={closeOutline} className="h-[24px] w-[24px]" />
               </IonButton>
             </IonButtons>
             <IonTitle>{title}</IonTitle>
@@ -126,8 +129,8 @@ const Typeahead = ({
           </IonToolbar>
         </IonHeader>
 
-        <IonContent color='light' class='ion-padding'>
-          <IonList id='modal-list' inset={true}>
+        <IonContent color="light" class="ion-padding">
+          <IonList id="modal-list" inset={true}>
             <IonRadioGroup
               {...register(name)}
               value={value}

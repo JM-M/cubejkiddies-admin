@@ -5,7 +5,7 @@ import HomeCarouselSlideEditor from "./HomeCarouselSlideEditor";
 const HomeCarouselEditor = () => {
   return (
     <>
-      <HomeCarouselSlideEditor />
+      {/* <HomeCarouselSlideEditor /> */}
       <div className="flex-1 flex justify-center items-center h-full">
         <IonButton className="block h-10 w-full ml-auto">
           <IonIcon

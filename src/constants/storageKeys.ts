@@ -1,0 +1,2 @@
+export const PRODUCT_PHOTOS = "PRODUCT_PHOTOS";
+export const NEW_HOME_SLIDE = "NEW_HOME_SLIDE";

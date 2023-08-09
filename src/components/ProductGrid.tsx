@@ -1,8 +1,8 @@
-import { IonButton, IonSpinner } from '@ionic/react';
-import ProductCard from './ProductCard';
-import PageLoader from './PageLoader';
-import { SortOption } from '../hooks/useProducts';
-import { Product } from '../constants/schemas/product';
+import { IonButton, IonSpinner } from "@ionic/react";
+import ProductCard from "./ProductCard";
+import PageLoader from "./PageLoader";
+import { SortOption } from "../hooks/useProducts";
+import { Product } from "../constants/schemas/product";
 
 interface Props {
   sortBy?: SortOption;
@@ -14,6 +14,7 @@ interface Props {
   onLoadMore?: Function;
   loadingMore?: boolean;
   hasMore?: boolean;
+  multiselect?: boolean;
 }
 
 const ProductGrid = ({
@@ -25,14 +26,15 @@ const ProductGrid = ({
   onLoadMore = () => null,
   loadingMore = false,
   hasMore = false,
+  multiselect = true,
 }: Props) => {
   if (initialLoading) return <PageLoader />;
 
   return (
     <>
-      <ul className='grid grid-cols-2 gap-5'>
+      <ul className="grid grid-cols-2 gap-5">
         {products.map((product: Product, i: number) => {
-          const initiallySelected = !!(
+          const selected = !!(
             initialSelection?.length &&
             initialSelection.find(({ id }) => id === product.id)
           );
@@ -40,10 +42,11 @@ const ProductGrid = ({
             <li key={i}>
               <ProductCard
                 product={product}
-                initiallySelected={initiallySelected}
+                selected={selected}
+                controlled={!multiselect}
                 selectable={selectable}
                 onSelectionChange={(selection) =>
-                  typeof onSelectionChange === 'function' &&
+                  typeof onSelectionChange === "function" &&
                   onSelectionChange(selection, product)
                 }
               />
@@ -53,16 +56,16 @@ const ProductGrid = ({
       </ul>
       {hasMore && (
         <IonButton
-          color='secondary'
-          className='block w-fit mx-auto my-5'
+          color="secondary"
+          className="block w-fit mx-auto my-5"
           onClick={() => onLoadMore()}
         >
           {loadingMore ? (
             <>
-              <IonSpinner name='dots' className='inline-block' /> Loading...
+              <IonSpinner name="dots" className="inline-block" /> Loading...
             </>
           ) : (
-            'Load more'
+            "Load more"
           )}
         </IonButton>
       )}

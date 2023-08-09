@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap");
 
 :root {
   --ion-color-primary: #1976d2;
@@ -64,11 +64,16 @@
   --ion-color-dark-shade: #2d2d2d;
   --ion-color-dark-tint: #474747;
 
-  --ion-font-family: 'Ubuntu', sans-serif;
+  --ion-font-family: "Ubuntu", sans-serif;
 }
 
 body {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: "Ubuntu", sans-serif;
+}
+
+*:disabled,
+*.disabled {
+  @apply opacity-50 pointer-events-none;
 }
 
 .toolbar-background {
@@ -96,7 +101,7 @@ ion-button {
   --box-shadow: none;
 }
 
-ion-button[fill='outline'] {
+ion-button[fill="outline"] {
   --border-width: 1px;
 }
 
@@ -160,7 +165,7 @@ ion-popover {
 }
 
 .side-menu-link-curve::after {
-  content: '';
+  content: "";
   @apply absolute top-0 left-0 h-full w-full bg-gray-200;
 }
 
@@ -179,4 +184,13 @@ ion-popover {
 
 .carousel__slide {
   @apply !pb-5;
+}
+
+/* react-phone-input-2 */
+.react-tel-input .form-control {
+  @apply !border-none;
+}
+
+.react-tel-input .flag-dropdown {
+  @apply !bg-transparent !border-none;
 }

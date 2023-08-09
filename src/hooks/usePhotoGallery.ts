@@ -1,19 +1,33 @@
-import { useState, useEffect } from 'react';
-import { isPlatform } from '@ionic/react';
+import { useState, useEffect, useCallback } from "react";
+import { isPlatform } from "@ionic/react";
 
 import {
   Camera,
   CameraResultType,
   CameraSource,
   Photo,
-} from '@capacitor/camera';
-import { Filesystem, Directory } from '@capacitor/filesystem';
-import { Preferences } from '@capacitor/preferences';
-import { Capacitor } from '@capacitor/core';
+} from "@capacitor/camera";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Preferences } from "@capacitor/preferences";
+import { Capacitor } from "@capacitor/core";
 
-const DEFAULT_STORAGE_KEY = 'photos';
-export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }) {
+const DEFAULT_STORAGE_KEY = "photos";
+
+interface Props {
+  storageKey: string;
+}
+
+export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }: Props) {
   const [photos, setPhotos] = useState<PhotoFile[]>([]);
+
+  const clearStorage = useCallback(async () => {
+    await Preferences.remove({ key: storageKey });
+    setPhotos([]);
+  }, [storageKey]);
+
+  useEffect(() => {
+    clearStorage();
+  }, []);
 
   useEffect(() => {
     const loadSaved = async () => {
@@ -23,7 +37,7 @@ export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }) {
         value ? JSON.parse(value) : []
       ) as PhotoFile[];
       // If running on the web...
-      if (!isPlatform('hybrid')) {
+      if (!isPlatform("hybrid")) {
         for (let photo of photosInPreferences) {
           const file = await Filesystem.readFile({
             path: photo.filepath,
@@ -38,15 +52,36 @@ export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }) {
     loadSaved();
   }, []);
 
-  const takePhoto = async () => {
+  const capturePhoto = async () => {
     const photo = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100,
     });
-    const fileName = new Date().getTime() + '.jpeg';
+    const fileName = new Date().getTime() + ".jpeg";
     const savedFileImage = await savePicture(photo, fileName);
+    return savedFileImage;
+  };
+
+  const takePhoto = async () => {
+    const savedFileImage = await capturePhoto();
     const newPhotos = [savedFileImage, ...photos];
+    setPhotos(newPhotos);
+    Preferences.set({ key: storageKey, value: JSON.stringify(newPhotos) });
+  };
+
+  const replacePhoto = async (index: number) => {
+    if (!index && isNaN(index)) {
+      throw new Error("No index provided");
+    }
+    if (index > photos?.length - 1) {
+      throw new Error(`No image to be replaced at index ${index}`);
+    }
+    const savedFileImage = await capturePhoto();
+    const newPhotos = photos.map((photo, i: number) => {
+      if (i === index) return savedFileImage;
+      return photo;
+    });
     setPhotos(newPhotos);
     Preferences.set({ key: storageKey, value: JSON.stringify(newPhotos) });
   };
@@ -57,7 +92,7 @@ export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }) {
   ): Promise<PhotoFile> => {
     let base64Data: string;
     // "hybrid" will detect Cordova or Capacitor;
-    if (isPlatform('hybrid')) {
+    if (isPlatform("hybrid")) {
       const file = await Filesystem.readFile({
         path: photo.path!,
       });
@@ -71,7 +106,7 @@ export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }) {
       directory: Directory.Data,
     });
 
-    if (isPlatform('hybrid')) {
+    if (isPlatform("hybrid")) {
       // Display the new image by rewriting the 'file://' path to HTTP
       // Details: https://ionicframework.com/docs/building/webview#file-protocol
       return {
@@ -97,7 +132,7 @@ export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }) {
 
     // delete photo file from filesystem
     const filename = photo.filepath.substring(
-      photo.filepath.lastIndexOf('/') + 1
+      photo.filepath.lastIndexOf("/") + 1
     );
     await Filesystem.deleteFile({
       path: filename,
@@ -106,13 +141,11 @@ export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }) {
     setPhotos(newPhotos);
   };
 
-  const clearStorage = async () =>
-    await Preferences.remove({ key: storageKey });
-
   return {
     deletePhoto,
     photos,
     takePhoto,
+    replacePhoto,
     clearStorage,
   };
 }
@@ -129,10 +162,10 @@ export async function base64FromPath(path: string): Promise<string> {
     const reader = new FileReader();
     reader.onerror = reject;
     reader.onload = () => {
-      if (typeof reader.result === 'string') {
+      if (typeof reader.result === "string") {
         resolve(reader.result);
       } else {
-        reject('method did not return a string');
+        reject("method did not return a string");
       }
     };
     reader.readAsDataURL(blob);
@@ -141,7 +174,7 @@ export async function base64FromPath(path: string): Promise<string> {
 
 export const base64ToImage = (base64String: string) => {
   const dataURI = `data:image/jpeg;base64,${base64String}`;
-  const fileDate = dataURI.split(',');
+  const fileDate = dataURI.split(",");
   // const mime = fileDate[0].match(/:(.*?);/)[1];
   const byteString = atob(fileDate[1]);
   const arrayBuffer = new ArrayBuffer(byteString.length);
@@ -149,6 +182,6 @@ export const base64ToImage = (base64String: string) => {
   for (let i = 0; i < byteString.length; i++) {
     int8Array[i] = byteString.charCodeAt(i);
   }
-  const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+  const blob = new Blob([arrayBuffer], { type: "image/jpeg" });
   return blob;
 };

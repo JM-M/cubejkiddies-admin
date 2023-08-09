@@ -12,12 +12,14 @@ import cx from "classnames";
 
 const links: { display: string; path: string }[] = [
   { display: "Orders", path: "/orders" },
-  { display: "Delivery prices", path: "/delivery-prices" },
+  // { display: "Delivery prices", path: "/delivery-prices" },
   { display: "Products", path: "/products" },
   { display: "Home slider", path: "/home-slider" },
   { display: "Home product sections", path: "/home-product-sections" },
   { display: "Categories", path: "/categories" },
   { display: "Users", path: "/users" },
+  { display: "About", path: "/about" },
+  { display: "Contact", path: "/contact" },
 ];
 
 const SideMenu = () => {

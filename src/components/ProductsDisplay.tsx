@@ -1,28 +1,29 @@
-import { useState } from 'react';
-import { IonSearchbar } from '@ionic/react';
-import { searchOutline, listOutline, gridOutline } from 'ionicons/icons';
-import DisplayController from './DisplayController';
-import QueryController from './QueryController';
-import ProductTable from './ProductTable';
-import ProductGrid from './ProductGrid';
-import useProducts, { SortOption } from '../hooks/useProducts';
-import { Product } from '../constants/schemas/product';
+import { useState } from "react";
+import { IonSearchbar } from "@ionic/react";
+import { searchOutline, listOutline, gridOutline } from "ionicons/icons";
+import DisplayController from "./DisplayController";
+import QueryController from "./QueryController";
+import ProductTable from "./ProductTable";
+import ProductGrid from "./ProductGrid";
+import useProducts, { SortOption } from "../hooks/useProducts";
+import { Product } from "../constants/schemas/product";
 
 const SORT_OPTIONS: { [option: string]: SortOption } = {
-  'A - Z': { field: 'name', reverse: false },
-  'Z - A': { field: 'name', reverse: true },
-  Newest: { field: 'createdAt', reverse: false },
-  Oldest: { field: 'createdAt', reverse: true },
+  "A - Z": { field: "name", reverse: false },
+  "Z - A": { field: "name", reverse: true },
+  Newest: { field: "createdAt", reverse: false },
+  Oldest: { field: "createdAt", reverse: true },
 };
 
 interface Props {
   selectable?: boolean;
   onSelectionChange?: (selection: boolean, product: Product) => any;
   initialSelection?: Product[];
+  multiselect?: boolean;
 }
 
-const ProductsDisplay = (props: Props) => {
-  const [display, setDisplay] = useState<'list' | 'grid'>('list');
+const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
+  const [display, setDisplay] = useState<"list" | "grid">("list");
   const [sortOption, setSortOption] = useState<string>();
 
   const displayOptions = {
@@ -46,7 +47,7 @@ const ProductsDisplay = (props: Props) => {
 
   let products;
   switch (display) {
-    case 'grid':
+    case "grid":
       products = (
         <ProductGrid
           products={data}
@@ -55,6 +56,7 @@ const ProductsDisplay = (props: Props) => {
           loadingMore={isLoading && page > 1}
           hasMore={hasNextPage}
           sortBy={sortBy}
+          multiselect={multiselect}
           {...props}
         />
       );
@@ -67,6 +69,7 @@ const ProductsDisplay = (props: Props) => {
           onPagePrev={fetchPreviousPage}
           totalPages={totalPages}
           loading={isLoading}
+          multiselect={multiselect}
           {...props}
         />
       );
@@ -74,18 +77,18 @@ const ProductsDisplay = (props: Props) => {
   }
   return (
     <>
-      <div className='w- myfull-5 rounded-lg overflow-hidden'>
+      <div className="w- myfull-5 rounded-lg overflow-hidden">
         <IonSearchbar
           searchIcon={searchOutline}
-          slot='end'
-          placeholder='Search products'
-          className='p-0 text-left'
-          color='light'
+          slot="end"
+          placeholder="Search products"
+          className="p-0 text-left"
+          color="light"
           animated
           autoFocus
         />
       </div>
-      <div className='flex justify-between my-5'>
+      <div className="flex justify-between my-5">
         <DisplayController
           options={displayOptions}
           display={display}

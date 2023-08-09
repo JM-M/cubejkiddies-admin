@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import {
   IonButton,
   IonButtons,
@@ -15,10 +15,11 @@ import {
   IonFab,
   IonFabButton,
   IonActionSheet,
-} from '@ionic/react';
-import { closeOutline, camera, trash, close } from 'ionicons/icons';
+} from "@ionic/react";
+import { closeOutline, camera, trash, close } from "ionicons/icons";
 
-import { usePhotoGallery, PhotoFile } from '../hooks/usePhotoGallery';
+import { usePhotoGallery, PhotoFile } from "../hooks/usePhotoGallery";
+import { PRODUCT_PHOTOS } from "../constants/storageKeys";
 
 type ImageType = PhotoFile | string;
 
@@ -39,7 +40,7 @@ const ProductImages = ({
   const [photoToDelete, setPhotoToDelete] = useState<ImageType>();
 
   const { deletePhoto, photos, takePhoto, clearStorage } = usePhotoGallery({
-    storageKey: 'product-form-photos',
+    storageKey: PRODUCT_PHOTOS,
   });
 
   const initialImagesRef = useRef(images);
@@ -62,10 +63,10 @@ const ProductImages = ({
   const openModal = () => setShowModal(true);
 
   const getImgSrc = (image: PhotoFile | string) =>
-    typeof image === 'string' ? image : image.webviewPath;
+    typeof image === "string" ? image : image.webviewPath;
 
   const isPhotoFile = (image: ImageType) => {
-    return typeof image !== 'string' && image?.filepath;
+    return typeof image !== "string" && image?.filepath;
   };
 
   const allImages = [...photos, ...initialImagesRef.current];
@@ -77,21 +78,21 @@ const ProductImages = ({
       <IonModal isOpen={showModal}>
         <IonHeader>
           <IonToolbar>
-            <IonButtons slot='start'>
+            <IonButtons slot="start">
               <IonButton onClick={closeModal}>
-                <IonIcon icon={closeOutline} className='h-[24px] w-[24px]' />
+                <IonIcon icon={closeOutline} className="h-[24px] w-[24px]" />
               </IonButton>
             </IonButtons>
             <IonTitle>Images (stock {index + 1})</IonTitle>
           </IonToolbar>
         </IonHeader>
 
-        <IonContent color='light' class='ion-padding'>
+        <IonContent color="light" class="ion-padding">
           <IonGrid>
             <IonRow>
               {allImages.map((image, index) => {
                 return (
-                  <IonCol size='6' key={index}>
+                  <IonCol size="6" key={index}>
                     <IonImg
                       onClick={() => setPhotoToDelete(image)}
                       src={getImgSrc(image)}
@@ -101,7 +102,7 @@ const ProductImages = ({
               })}
             </IonRow>
           </IonGrid>
-          <IonFab vertical='bottom' horizontal='center' slot='fixed'>
+          <IonFab vertical="bottom" horizontal="center" slot="fixed">
             <IonFabButton onClick={() => takePhoto()}>
               <IonIcon icon={camera}></IonIcon>
             </IonFabButton>
@@ -110,8 +111,8 @@ const ProductImages = ({
             isOpen={!!photoToDelete}
             buttons={[
               {
-                text: 'Delete',
-                role: 'destructive',
+                text: "Delete",
+                role: "destructive",
                 icon: trash,
                 handler: () => {
                   if (photoToDelete) {
@@ -129,9 +130,9 @@ const ProductImages = ({
                 },
               },
               {
-                text: 'Cancel',
+                text: "Cancel",
                 icon: close,
-                role: 'cancel',
+                role: "cancel",
               },
             ]}
             onDidDismiss={() => setPhotoToDelete(undefined)}
@@ -139,20 +140,20 @@ const ProductImages = ({
         </IonContent>
       </IonModal>
       <div
-        className='flex flex-col items-center justify-center w-[150px] h-[200px] rounded-xl'
+        className="flex flex-col items-center justify-center w-[150px] h-[200px] rounded-xl"
         onClick={openModal}
       >
         {!!numPhotos ? (
           <IonImg src={getImgSrc(firstImage)} />
         ) : (
-          <span className='inline-block my-3 text-[var(--ion-color-medium)]'>
+          <span className="inline-block my-3 text-[var(--ion-color-medium)]">
             No images added
           </span>
         )}
         {numPhotos > 1 && (
-          <span className='inline-block my-3'>{numPhotos} images</span>
+          <span className="inline-block my-3">{numPhotos} images</span>
         )}
-        <IonButton fill='clear' className='block mt-5'>
+        <IonButton fill="clear" className="block mt-5">
           Edit
         </IonButton>
       </div>

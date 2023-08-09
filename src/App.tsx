@@ -16,6 +16,8 @@ import CreateProduct from "./pages/CreateProduct";
 import Product from "./pages/Product";
 import EditProduct from "./pages/EditProduct";
 import HomeSlider from "./pages/HomeSlider";
+import NewHomeSlide from "./pages/NewHomeSlide";
+import EditHomeSlide from "./pages/EditHomeSlide";
 import ProductSections from "./pages/ProductSections";
 import CreateProductSection from "./pages/CreateProductSection";
 import EditProductSection from "./pages/EditProductSection";
@@ -24,6 +26,8 @@ import DeliveryPrices from "./pages/DeliveryPrices";
 import Users from "./pages/Users";
 import User from "./pages/User";
 import Login from "./pages/Login";
+import AboutPage from "./pages/About";
+import Contact from "./pages/Contact";
 
 import SideMenu from "./components/SideMenu";
 import TopHeader from "./components/TopHeader";
@@ -82,6 +86,12 @@ const App: React.FC = () => (
                   component={EditProduct}
                 />
                 <Route exact path="/home-slider" component={HomeSlider} />
+                <Route exact path="/home-slider/new" component={NewHomeSlide} />
+                <Route
+                  exact
+                  path="/home-slider/:homeSlideId"
+                  component={EditHomeSlide}
+                />
                 <Route
                   exact
                   path="/home-product-sections"
@@ -105,6 +115,8 @@ const App: React.FC = () => (
                 />
                 <Route exact path="/users" component={Users} />
                 <Route exact path="/users/:uid" component={User} />
+                <Route exact path="/about" component={AboutPage} />
+                <Route exact path="/contact" component={Contact} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/" render={() => <Redirect to="/login" />} />
               </div>
