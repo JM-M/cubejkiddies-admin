@@ -1,14 +1,7 @@
 import { useEffect } from "react";
-import {
-  IonItem,
-  IonButton,
-  IonSpinner,
-  IonInput,
-  IonLabel,
-} from "@ionic/react";
+import { IonButton, IonSpinner } from "@ionic/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import cx from "classnames";
 import PageLoader from "./PageLoader";
 import Input from "./Input";
 import PhoneInput from "./PhoneInput";

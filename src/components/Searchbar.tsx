@@ -21,7 +21,7 @@ const Searchbar: React.FC<
   const ref = useRef<any>();
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className="relative h-fit">
       <InstantSearch searchClient={searchClient} indexName={indexName}>
         <SearchBox
           {...rest}

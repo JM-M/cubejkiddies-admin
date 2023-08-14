@@ -2,16 +2,17 @@ import { Link } from "react-router-dom";
 import { Highlight } from "react-instantsearch";
 
 const UserSearchHit: React.FC<any> = ({ hit }) => {
+  console.log(hit);
   return (
     <Link to={`/users/${hit.objectID}`} className="block">
-      <article className="mb-5">
-        <div className="flex-[3]">
+      <article className="mb-5 p-3">
+        <p className="flex-[3] flex gap-2">
           <Highlight attribute="firstName" hit={hit} />
           <Highlight attribute="lastName" hit={hit} />
-          <p className="text-gray-700">
-            <Highlight attribute="email" hit={hit} />
-          </p>
-        </div>
+        </p>
+        <p className="text-gray-500">
+          <Highlight attribute="email" hit={hit} />
+        </p>
       </article>
     </Link>
   );

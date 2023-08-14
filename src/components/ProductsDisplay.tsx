@@ -78,7 +78,7 @@ const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
   }
   return (
     <>
-      <div className="relative myfull-5 rounded-lg overflow-visible">
+      <div className="rounded-lg overflow-visible">
         <Searchbar
           indexName="products"
           hitComponent={ProductSearchHit}

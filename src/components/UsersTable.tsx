@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useIonRouter, IonSpinner } from "@ionic/react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { formatDistance } from "date-fns";
+import { format } from "date-fns";
 import Table from "./Table";
 import TableController from "./TableController";
 
@@ -34,9 +34,7 @@ const columns = [
     cell: ({ cell }) => {
       const userCreationDate = cell.getValue()?.toDate();
       if (!userCreationDate) return "N/A";
-      const dateDistance = formatDistance(userCreationDate, new Date(), {
-        addSuffix: true,
-      });
+      const dateDistance = format(userCreationDate, "dd MMM yyyy");
       return dateDistance;
     },
   }),

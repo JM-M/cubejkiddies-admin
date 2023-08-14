@@ -1,16 +1,24 @@
 import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
 import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
 
+export interface SortOption {
+  field: string;
+  reverse?: boolean;
+}
+
 interface Props {
   uid?: string;
+  sortBy?: SortOption;
 }
 
 const collectionName = "users";
 
 const useUsers = (props: Props = {}) => {
-  const { uid = "" } = props;
+  const { uid = "", sortBy = { field: "firstName", reverse: false } } = props;
   const usersQuery = useFirestoreCollectionQuery({
     collectionName,
+    orderByField: sortBy.field,
+    reverseOrder: sortBy.reverse,
     options: { pageSize: 10 },
   });
   const users = usersQuery.data;
