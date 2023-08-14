@@ -1,11 +1,30 @@
-const Address = () => {
+import PageLoader from "./PageLoader";
+import { CheckoutAddress } from "../hooks/useCart";
+import useTerminal from "../hooks/useTerminal";
+
+const Address: React.FC<CheckoutAddress> = ({
+  streetAddress,
+  additionalDetails,
+  city,
+  state,
+  country,
+}) => {
+  const {
+    getCountryFromIsoCode,
+    getStateFromIsoCode,
+    countriesQuery,
+    statesQuery,
+  } = useTerminal();
+
+  if (countriesQuery.isLoading || statesQuery.isLoading) return <PageLoader />;
+
   return (
     <div>
-      <div>45 A Johnson Street</div>
-      <div>45A Bus stop</div>
-      <div>Bariga</div>
-      <div>Epe</div>
-      <div>Lagos</div>
+      <div>{streetAddress}</div>
+      {!!additionalDetails && <div>{additionalDetails}</div>}
+      <div>{city}</div>
+      <div>{getStateFromIsoCode(state)?.name}</div>
+      <div>{getCountryFromIsoCode(country)?.name}</div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 type Country = { name: string; isoCode: string };
 
@@ -8,24 +8,24 @@ interface Props {
   stateIsoCode?: string;
 }
 
-const TERMINAL_API_KEY = 'sk_live_ewf13L3iikIiZ1ERRDNcJxWtXcKoSPwq';
+const TERMINAL_API_KEY = "sk_live_ewf13L3iikIiZ1ERRDNcJxWtXcKoSPwq";
 
 const axiosInstance = axios.create({
-  baseURL: 'https://api.terminal.africa/v1/',
+  baseURL: "https://api.terminal.africa/v1/",
   headers: {
     Authorization: `Bearer ${TERMINAL_API_KEY}`,
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 const useTerminal = (props: Props = {}) => {
-  const { countryIsoCode = 'NG', stateIsoCode = '' } = props;
+  const { countryIsoCode = "NG", stateIsoCode = "" } = props;
   const countriesQuery = useQuery({
-    queryKey: ['countries'],
+    queryKey: ["countries"],
     queryFn: async () => {
-      const { data } = await axiosInstance.get('countries');
+      const { data } = await axiosInstance.get("countries");
       if (!data.status) {
-        throw new Error(data.message || 'An error occurred');
+        throw new Error(data.message || "An error occurred");
       }
       return data.data;
     },
@@ -33,13 +33,13 @@ const useTerminal = (props: Props = {}) => {
   });
 
   const statesQuery = useQuery({
-    queryKey: ['states', countryIsoCode],
+    queryKey: ["states", countryIsoCode],
     queryFn: async () => {
-      const { data } = await axiosInstance.get('states', {
+      const { data } = await axiosInstance.get("states", {
         params: { country_code: countryIsoCode },
       });
       if (!data.status) {
-        throw new Error(data.message || 'An error occurred');
+        throw new Error(data.message || "An error occurred");
       }
       return data.data;
     },
@@ -47,26 +47,26 @@ const useTerminal = (props: Props = {}) => {
   });
 
   const citiesQuery = useQuery({
-    queryKey: ['cities', countryIsoCode, stateIsoCode],
+    queryKey: ["cities", countryIsoCode, stateIsoCode],
     queryFn: async () => {
-      const { data } = await axiosInstance.get('cities', {
+      const { data } = await axiosInstance.get("cities", {
         params: { country_code: countryIsoCode, state_code: stateIsoCode },
       });
       if (!data.status) {
-        throw new Error(data.message || 'An error occurred');
+        throw new Error(data.message || "An error occurred");
       }
       return data.data;
     },
     staleTime: Infinity,
   });
 
-  const getCountryNameFromIsoCode = (isoCode: string) => {
+  const getCountryFromIsoCode = (isoCode: string) => {
     const countries = countriesQuery.data;
     if (countriesQuery.isLoading || !countries.length) return false;
     return countries.find((country: Country) => country.isoCode === isoCode);
   };
 
-  const getStateNameFromIsoCode = (isoCode: string) => {
+  const getStateFromIsoCode = (isoCode: string) => {
     const states = statesQuery.data;
     if (statesQuery.isLoading || !states.length) return false;
     return states.find((state: Country) => state.isoCode === isoCode);
@@ -76,8 +76,8 @@ const useTerminal = (props: Props = {}) => {
     countriesQuery,
     statesQuery,
     citiesQuery,
-    getCountryNameFromIsoCode,
-    getStateNameFromIsoCode,
+    getCountryFromIsoCode,
+    getStateFromIsoCode,
   };
 };
 

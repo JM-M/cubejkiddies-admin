@@ -1,59 +1,59 @@
-import { useState } from 'react';
-import { createColumnHelper } from '@tanstack/react-table';
-import Table from './Table';
-
-import Status from './Status';
-import { useIonRouter } from '@ionic/react';
-
-type Order = {
-  orderId: string;
-  date: Date;
-  status: string;
-  totalPrice: number;
-};
+import { useState } from "react";
+import { useIonRouter } from "@ionic/react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Timestamp } from "firebase/firestore";
+import { formatDistance } from "date-fns";
+import Table from "./Table";
+import Status from "./Status";
+import PageLoader from "./PageLoader";
+import useOrders from "../hooks/useOrders";
+import { Order } from "../hooks/useOrders";
 
 const columnHelper = createColumnHelper<Order>();
 
 const columns = [
-  columnHelper.accessor('orderId', {
-    header: 'Order ID',
-    cell: (orderId) => (
-      <span className='font-medium'>#{orderId.getValue()}</span>
-    ),
+  columnHelper.accessor("id", {
+    header: "Order ID",
+    cell: (id) => <span className="font-medium">#{id.getValue()}</span>,
   }),
-  columnHelper.accessor('date', {
-    header: 'Date',
-    cell: () => 'May 30, 2023',
+  columnHelper.accessor("createdAt", {
+    header: "Date",
+    cell: ({
+      row: {
+        original: { createdAt },
+      },
+    }) => {
+      return formatDistance(createdAt!.toDate(), new Date(), {
+        addSuffix: true,
+      });
+    },
   }),
-  columnHelper.accessor('status', {
-    header: 'Status',
-    cell: (status) => <Status status={status.getValue()} />,
-  }),
-  columnHelper.accessor('totalPrice', {
-    header: 'Total',
-    cell: (totalPrice) => `N ${totalPrice.getValue()}`,
+  columnHelper.accessor("statusEvents", {
+    header: "Status",
+    cell: ({
+      row: {
+        original: { statusEvents = [] },
+      },
+    }) => {
+      if (!statusEvents?.length) return null;
+      const { status } = statusEvents[statusEvents.length - 1];
+      return <Status status={status} />;
+    },
   }),
 ];
 
 const OrdersTable = () => {
-  const [data, setData] = useState(
-    [...Array(10)].map((_) => ({
-      orderId: Math.trunc(Math.random() * 999999).toString(),
-      date: new Date(),
-      status: ['confirmed', 'en-route', 'delivered'][
-        Math.floor(Math.random() * 3)
-      ],
-      totalPrice: Math.ceil(Math.random() * 10) * 500,
-    }))
-  ); // fake data
-
   const ionRouter = useIonRouter();
 
+  const { orders, ordersQuery } = useOrders();
+
   const goToOrder = (row: any) => {
-    ionRouter.push(`/orders/${row.original.orderId}`);
+    ionRouter.push(`/orders/${row.original.id}`);
   };
 
-  return <Table data={data} columns={columns} onRowClick={goToOrder} />;
+  if (ordersQuery.isLoading) return <PageLoader />;
+
+  return <Table data={orders} columns={columns} onRowClick={goToOrder} />;
 };
 
 export default OrdersTable;

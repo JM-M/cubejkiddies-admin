@@ -25,7 +25,6 @@ const ProductCard = ({
   const { name, price, category, stocks = [], id } = product;
 
   const [selected, setSelected] = useState<boolean>(externalSelected);
-  // console.log(name, externalSelected);
 
   useEffect(() => {
     if (!controlled || selected === externalSelected) return;
@@ -73,7 +72,11 @@ const ProductCard = ({
       >
         <div className="flex justify-center items-center w-full aspect-[5/6] mb-[10px] bg-gray-100 rounded-lg overflow-hidden">
           {image ? (
-            <IonImg src={image as string} alt={name} />
+            <IonImg
+              src={image as string}
+              alt={name}
+              className="h-full w-full bg-gray-200 object-cover"
+            />
           ) : (
             <span className="text-gray-500">No image added</span>
           )}

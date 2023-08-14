@@ -194,3 +194,46 @@ ion-popover {
 .react-tel-input .flag-dropdown {
   @apply !bg-transparent !border-none;
 }
+
+/* react-instantsearch */
+.ais-SearchBox-form {
+  @apply relative;
+}
+
+.ais-SearchBox-input {
+  @apply block h-12 w-full px-14 bg-[var(--ion-color-light)] rounded-lg focus:outline-none outline-none focus:border focus:border-[var(--ion-color-primary)];
+}
+
+.ais-SearchBox-submit,
+.ais-SearchBox-reset {
+  @apply absolute top-1/2 -translate-y-1/2 h-fit w-fit;
+}
+
+.ais-SearchBox-submit {
+  @apply left-5;
+}
+
+.ais-SearchBox-reset {
+  @apply right-5;
+}
+
+.ais-SearchBox-loadingIcon,
+.ais-SearchBox-submitIcon {
+  @apply h-[18px] w-[18px];
+}
+
+.ais-SearchBox-resetIcon {
+  @apply h-[14px] w-[14px];
+}
+
+.ais-Hits {
+  @apply absolute top-[calc(100%_+_20px)] left-0 w-full h-fit bg-white z-10;
+}
+
+.ais-Highlight-highlighted {
+  @apply bg-transparent text-[var(--ion-color-primary)] font-bold;
+}
+
+.ais-SearchBox-loadingIndicator {
+  @apply absolute top-[calc(100%_+_20px)] left-1/2 -translate-x-1/2 h-fit w-fit;
+}

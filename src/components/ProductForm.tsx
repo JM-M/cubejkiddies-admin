@@ -158,6 +158,21 @@ const ProductForm = ({ productId }: Props) => {
       </IonItem>
       <IonItem
         className={cx({
+          "ion-invalid": !!errors.weight,
+          "ion-valid": !errors.weight,
+        })}
+      >
+        <IonInput
+          type="number"
+          min={1}
+          label="Weight (grams)"
+          labelPlacement="floating"
+          {...register("weight")}
+          errorText={errors.weight?.message}
+        />
+      </IonItem>
+      <IonItem
+        className={cx({
           "ion-invalid": !!errors.price,
           "ion-valid": !errors.price,
         })}

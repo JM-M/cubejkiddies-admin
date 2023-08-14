@@ -1,12 +1,14 @@
-import { Filesystem, Directory } from '@capacitor/filesystem';
-import { v4 as uuidv4 } from 'uuid';
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import { v4 as uuidv4 } from "uuid";
 
-import { Product } from '../constants/schemas/product';
-import { PhotoFile, base64ToImage } from './usePhotoGallery';
-import useFirebaseStorage from './useFirebaseStorage';
-import useFirestoreDocumentMutation from './useFirestoreDocumentMutation';
-import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
-import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
+import { Product } from "../constants/schemas/product";
+import { PhotoFile, base64ToImage } from "./usePhotoGallery";
+import useFirebaseStorage from "./useFirebaseStorage";
+import useFirestoreDocumentMutation from "./useFirestoreDocumentMutation";
+import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
+import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
+import { getProductImages } from "./useProductImages";
+import useCategories from "./useCategories";
 
 export interface SortOption {
   field: string;
@@ -18,14 +20,37 @@ interface Props {
   sortBy?: SortOption;
 }
 
-const collectionName = 'products';
+const collectionName = "products";
 
 const useProducts = (props: Props = {}) => {
-  const { productId, sortBy = { field: 'name', reverse: false } } = props;
+  const { productId, sortBy = { field: "name", reverse: false } } = props;
 
   const { uploadToFirebaseStorage } = useFirebaseStorage();
+
+  const { getCategoryNameFromValue } = useCategories();
+
+  const generateRecordFromProduct = (product: Product) => {
+    // transform product into an algolia product record
+    const { id, name, category, price, discount, variations, description } =
+      product;
+    const images = getProductImages(product) || [];
+    const record: any = {
+      name,
+      description,
+      category: getCategoryNameFromValue(category),
+      price,
+      discount,
+      variations,
+      objectID: id,
+    };
+    if (images?.length) record.image = images[0];
+    return record;
+  };
+
   const { firestoreDocumentMutation } = useFirestoreDocumentMutation({
     collectionName,
+    createAlgoliaRecord: true,
+    generateAlgoliaRecord: generateRecordFromProduct,
   });
 
   const productsQuery = useFirestoreCollectionQuery({
@@ -81,7 +106,7 @@ const useProducts = (props: Props = {}) => {
       const { images = [] } = stock;
       if (images.length) {
         for (const image of images) {
-          if (typeof image !== 'string' && image.filepath) {
+          if (typeof image !== "string" && image.filepath) {
             unsavedImages.push(image);
           }
         }
@@ -110,15 +135,15 @@ const useProducts = (props: Props = {}) => {
         ...stock,
         images: images
           .map((image: any) => {
-            if (typeof image === 'string') return image;
+            if (typeof image === "string") return image;
             if (image.filepath) {
               if (savedImages[image.filepath]) {
                 return savedImages[image.filepath];
               }
-              throw new Error('Unuploaded image found after image upload!');
+              throw new Error("Unuploaded image found after image upload!");
             }
             throw new Error(
-              'Invalid image found in stocks! Image is neither a string nor has the filepath property.'
+              "Invalid image found in stocks! Image is neither a string nor has the filepath property."
             );
           })
           .filter((v: string) => v),

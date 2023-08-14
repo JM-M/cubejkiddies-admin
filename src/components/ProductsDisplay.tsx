@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { IonSearchbar } from "@ionic/react";
-import { searchOutline, listOutline, gridOutline } from "ionicons/icons";
+import { listOutline, gridOutline } from "ionicons/icons";
 import DisplayController from "./DisplayController";
 import QueryController from "./QueryController";
 import ProductTable from "./ProductTable";
 import ProductGrid from "./ProductGrid";
+import Searchbar from "./Searchbar";
+import ProductSearchHit from "./ProductSearchHit";
 import useProducts, { SortOption } from "../hooks/useProducts";
 import { Product } from "../constants/schemas/product";
 
@@ -77,15 +78,11 @@ const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
   }
   return (
     <>
-      <div className="w- myfull-5 rounded-lg overflow-hidden">
-        <IonSearchbar
-          searchIcon={searchOutline}
-          slot="end"
+      <div className="relative myfull-5 rounded-lg overflow-visible">
+        <Searchbar
+          indexName="products"
+          hitComponent={ProductSearchHit}
           placeholder="Search products"
-          className="p-0 text-left"
-          color="light"
-          animated
-          autoFocus
         />
       </div>
       <div className="flex justify-between my-5">

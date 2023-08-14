@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useIonRouter, IonSpinner } from '@ionic/react';
-import { createColumnHelper } from '@tanstack/react-table';
-import { formatDistance } from 'date-fns';
-import Table from './Table';
-import TableController from './TableController';
+import { useState } from "react";
+import { useIonRouter, IonSpinner } from "@ionic/react";
+import { createColumnHelper } from "@tanstack/react-table";
+import { formatDistance } from "date-fns";
+import Table from "./Table";
+import TableController from "./TableController";
 
 type User = {
   email: string;
@@ -23,16 +23,17 @@ interface Props {
 const columnHelper = createColumnHelper<User>();
 
 const columns = [
-  columnHelper.accessor('firstName', {
-    header: 'Name',
+  columnHelper.accessor("firstName", {
+    header: "Name",
   }),
-  columnHelper.accessor('email', {
-    header: 'Email',
+  columnHelper.accessor("email", {
+    header: "Email",
   }),
-  columnHelper.accessor('createdAt', {
-    header: 'Created',
+  columnHelper.accessor("createdAt", {
+    header: "Created",
     cell: ({ cell }) => {
-      const userCreationDate = cell.getValue().toDate();
+      const userCreationDate = cell.getValue()?.toDate();
+      if (!userCreationDate) return "N/A";
       const dateDistance = formatDistance(userCreationDate, new Date(), {
         addSuffix: true,
       });
@@ -58,15 +59,15 @@ const UsersTable = ({
 
   return (
     <>
-      <div className='flex flex-col min-h-[300px]'>
+      <div className="flex flex-col min-h-[300px]">
         {users ? (
           <Table data={users} columns={columns} onRowClick={goToUser} />
         ) : (
-          <span className='m-auto'>
+          <span className="m-auto">
             {loading ? (
-              <span className='text-gray-500'>Page not found</span>
+              <span className="text-gray-500">Page not found</span>
             ) : (
-              <IonSpinner name='circular' />
+              <IonSpinner name="circular" />
             )}
           </span>
         )}
