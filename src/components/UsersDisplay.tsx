@@ -26,7 +26,7 @@ const UsersDisplay = () => {
 
   return (
     <>
-      <div className="w-full my-5 rounded-lg">
+      <div className="w-full rounded-lg">
         <Searchbar
           indexName="users"
           hitComponent={UserSearchHit}

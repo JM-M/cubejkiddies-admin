@@ -1,0 +1,153 @@
+import { useState, useEffect } from "react";
+import { useIonRouter } from "@ionic/react";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  User as FirebaseUser,
+  updatePassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
+import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { auth } from "../../firebase";
+import { AdminLogin, AdminSignUp } from "../constants/schemas/auth";
+import useFirestoreDocumentMutation from "./useFirestoreDocumentMutation";
+import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
+
+export interface AdminFirestoreDocument {
+  email: string;
+  firstName: string;
+  lastName: string;
+  uid: string;
+  createdAt?: Timestamp;
+}
+
+const collectionName = "admins";
+const useAuth = () => {
+  const [firebaseAuthAdmin, setFirebaseAuthAdmin] =
+    useState<FirebaseUser | null>();
+  const [autoAuthenticating, setAutoAuthenticating] = useState<boolean>(true);
+  const { uid } = firebaseAuthAdmin || {};
+
+  const ionRouter = useIonRouter();
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (admin) => {
+      setFirebaseAuthAdmin(admin);
+    });
+  }, []);
+
+  const { firestoreDocumentMutation: adminDocMutation } =
+    useFirestoreDocumentMutation({
+      collectionName,
+      invalidateCollectionQuery: false,
+      invalidateDocumentQuery: false,
+    });
+
+  const saveCreatedAdminToFirestore = (adminDoc: AdminFirestoreDocument) => {
+    const { uid } = adminDoc;
+    return adminDocMutation.mutateAsync({
+      document: adminDoc,
+      documentId: uid,
+      addTimestamp: true,
+    });
+  };
+
+  const onAdminDocFetch = (adminDoc: AdminFirestoreDocument) => {
+    const uid = adminDoc?.uid;
+    if (!uid) {
+      if (firebaseAuthAdmin) {
+        setFirebaseAuthAdmin(null);
+        signOut(auth);
+      }
+      return;
+    }
+    setAutoAuthenticating(false);
+    const authEmail = firebaseAuthAdmin?.email;
+    const adminDocEmail = adminDoc.email;
+    if (adminDocEmail !== authEmail) {
+      adminDocMutation.mutateAsync({
+        document: { ...adminDoc, email: authEmail },
+        documentId: uid,
+        addTimestamp: true,
+      });
+    }
+  };
+
+  const { data: admin } = useFirestoreDocumentQuery({
+    collectionName,
+    documentId: uid,
+    onSuccess: onAdminDocFetch,
+  });
+  const isLoggedIn = !autoAuthenticating && !!uid;
+
+  // using an effect ensures that autoAuthenticating is only turned to false when admin state has been set
+  useEffect(() => {
+    if (admin && autoAuthenticating) setAutoAuthenticating(false);
+  }, [admin, autoAuthenticating]);
+
+  const createAdminFn = async ({
+    email,
+    password,
+    firstName,
+    lastName,
+  }: AdminSignUp) => {
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const uid = credential.user.uid;
+    const { data: userDoc } = await saveCreatedAdminToFirestore({
+      uid,
+      email: credential.user.email as string,
+      firstName,
+      lastName,
+    });
+    return userDoc;
+  };
+
+  const onCreateAdmin = (user: AdminFirestoreDocument) => {
+    queryClient.setQueryData(
+      ["document", { collectionName, documentId: admin.uid }],
+      user
+    );
+  };
+
+  const createAdminMutation = useMutation({
+    mutationKey: ["create-user-doc"],
+    mutationFn: createAdminFn,
+    onSuccess: onCreateAdmin, // set userDoc query
+  });
+
+  const createAdmin = createAdminMutation.mutate;
+
+  const loginFn = async ({ email, password }: AdminLogin) => {
+    await signInWithEmailAndPassword(auth, email, password);
+  };
+
+  const loginMutation = useMutation({
+    mutationKey: ["admin-sign-in"],
+    mutationFn: loginFn,
+    onSuccess: () => ionRouter.push("/products"),
+  });
+
+  return {
+    createAdmin,
+    createAdminMutation,
+    login: loginMutation.mutate,
+    loginMutation,
+    user: uid ? (admin as AdminFirestoreDocument) : undefined,
+    uid,
+    isLoggedIn,
+  };
+};
+
+export default useAuth;

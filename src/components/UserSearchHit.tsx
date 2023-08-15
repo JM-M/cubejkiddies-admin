@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Highlight } from "react-instantsearch";
 
 const UserSearchHit: React.FC<any> = ({ hit }) => {
-  console.log(hit);
   return (
     <Link to={`/users/${hit.objectID}`} className="block">
       <article className="mb-5 p-3">

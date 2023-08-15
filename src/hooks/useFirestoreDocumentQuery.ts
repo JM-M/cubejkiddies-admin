@@ -1,13 +1,18 @@
-import { doc, getDoc } from 'firebase/firestore';
-import { useQuery } from '@tanstack/react-query';
-import { db } from '../../firebase';
+import { doc, getDoc } from "firebase/firestore";
+import { useQuery } from "@tanstack/react-query";
+import { db } from "../../firebase";
 
 interface Props {
   collectionName: string;
   documentId?: string;
+  onSuccess?: Function;
 }
 
-const useFirestoreDocumentQuery = ({ collectionName, documentId }: Props) => {
+const useFirestoreDocumentQuery = ({
+  collectionName,
+  documentId,
+  onSuccess = () => null,
+}: Props) => {
   const fetchDocument = async ({ queryKey = {} }: any) => {
     const [_key, { collectionName, documentId }] = queryKey;
     if (!documentId) {
@@ -20,15 +25,17 @@ const useFirestoreDocumentQuery = ({ collectionName, documentId }: Props) => {
     const docRef = doc(db, collectionName, documentId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      return { ...docSnap.data(), id: documentId } as any;
+      const document = { ...docSnap.data(), id: documentId } as any;
+      onSuccess(document);
+      return document;
     } else {
       // docSnap.data() will be undefined in this case
-      throw new Error('Document does not exist!');
+      throw new Error("Document does not exist!");
     }
   };
 
   const queryState = useQuery({
-    queryKey: ['document', { collectionName, documentId }],
+    queryKey: ["document", { collectionName, documentId }],
     queryFn: fetchDocument,
     staleTime: Infinity,
   });
