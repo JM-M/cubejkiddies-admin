@@ -18,7 +18,7 @@ const links: { display: string; path: string }[] = [
   { display: "Home product sections", path: "/home-product-sections" },
   { display: "Categories", path: "/categories" },
   { display: "Users", path: "/users" },
-  { display: "Admins", path: "/admins" },
+  // { display: "Admins", path: "/admins" },
   { display: "About", path: "/about" },
   { display: "Contact", path: "/contact" },
 ];
