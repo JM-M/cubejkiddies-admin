@@ -3,7 +3,7 @@ import ContactForm from "../components/ContactForm";
 
 const Contact: React.FC = () => {
   return (
-    <Page title="Contact">
+    <Page title="Contact settings">
       <ContactForm />
     </Page>
   );

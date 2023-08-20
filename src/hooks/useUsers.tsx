@@ -1,6 +1,13 @@
 import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
 import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
 
+export type User = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: any;
+};
+
 export interface SortOption {
   field: string;
   reverse?: boolean;

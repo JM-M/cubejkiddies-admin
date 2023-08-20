@@ -1,15 +1,16 @@
-import { useMemo, useState } from 'react';
-import { IonFab, IonFabButton, IonFabList, IonIcon } from '@ionic/react';
+import { useMemo, useState } from "react";
+import { IonFab, IonFabButton, IonFabList, IonIcon } from "@ionic/react";
 import {
   chevronUpOutline,
   pencilOutline,
   trashBinOutline,
-} from 'ionicons/icons';
-import ProductCarousel from './ProductCarousel';
-import ProductInfo from './ProductInfo';
-import ProductVariations from './ProductVariations';
-import ProductDescription from './ProductDescription';
-import useProducts from '../hooks/useProducts';
+} from "ionicons/icons";
+import ProductCarousel from "./ProductCarousel";
+import ProductInfo from "./ProductInfo";
+import ProductVariations from "./ProductVariations";
+import ProductDescription from "./ProductDescription";
+import useProducts from "../hooks/useProducts";
+import PageLoader from "./PageLoader";
 
 interface Props {
   productId: string;
@@ -51,8 +52,13 @@ const ProductPreview = ({ productId }: Props) => {
     }, []);
   }, [stocks, variant, variantKeys]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (!data) return <div>data is not defined</div>;
+  if (isLoading) return <PageLoader />;
+  if (!data)
+    return (
+      <div className="h-fit w-fit m-auto text-gray-500 text-center">
+        No product data
+      </div>
+    );
 
   return (
     <>
@@ -63,18 +69,18 @@ const ProductPreview = ({ productId }: Props) => {
         setProductVariant={setProductVariant}
       />
       <ProductDescription content={description} />
-      <IonFab slot='fixed' vertical='bottom' horizontal='end'>
+      <IonFab slot="fixed" vertical="bottom" horizontal="end">
         <IonFabButton>
           <IonIcon icon={chevronUpOutline}></IonIcon>
         </IonFabButton>
-        <IonFabList side='top'>
+        <IonFabList side="top">
           <IonFabButton
-            color='primary'
+            color="primary"
             routerLink={`/products/${productId}/edit`}
           >
             <IonIcon icon={pencilOutline}></IonIcon>
           </IonFabButton>
-          <IonFabButton color='danger'>
+          <IonFabButton color="danger">
             <IonIcon icon={trashBinOutline}></IonIcon>
           </IonFabButton>
         </IonFabList>

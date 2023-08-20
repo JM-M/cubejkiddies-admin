@@ -25,6 +25,7 @@ export interface AdminFirestoreDocument {
   lastName: string;
   uid: string;
   createdAt?: Timestamp;
+  primary?: boolean;
 }
 
 const collectionName = "admins";
@@ -88,10 +89,18 @@ const useAuth = () => {
   });
   const isLoggedIn = !autoAuthenticating && !!uid;
 
+  useEffect(() => {
+    if (!isLoggedIn && ionRouter?.routeInfo.pathname !== "/login")
+      ionRouter.push("/login");
+  }, [isLoggedIn, ionRouter]);
+
   // using an effect ensures that autoAuthenticating is only turned to false when admin state has been set
   useEffect(() => {
-    if (admin && autoAuthenticating) setAutoAuthenticating(false);
-  }, [admin, autoAuthenticating]);
+    if (admin && autoAuthenticating) {
+      setAutoAuthenticating(false);
+      ionRouter.push("/products");
+    }
+  }, [admin, autoAuthenticating, ionRouter]);
 
   const createAdminFn = async ({
     email,
@@ -105,26 +114,23 @@ const useAuth = () => {
       password
     );
     const uid = credential.user.uid;
-    const { data: userDoc } = await saveCreatedAdminToFirestore({
+    const { data: adminDoc } = await saveCreatedAdminToFirestore({
       uid,
       email: credential.user.email as string,
       firstName,
       lastName,
     });
-    return userDoc;
+    return adminDoc;
   };
 
-  const onCreateAdmin = (user: AdminFirestoreDocument) => {
-    queryClient.setQueryData(
-      ["document", { collectionName, documentId: admin.uid }],
-      user
-    );
+  const onCreateAdmin = (admin: AdminFirestoreDocument) => {
+    ionRouter.push("/admins");
   };
 
   const createAdminMutation = useMutation({
-    mutationKey: ["create-user-doc"],
+    mutationKey: ["create-admin-doc"],
     mutationFn: createAdminFn,
-    onSuccess: onCreateAdmin, // set userDoc query
+    onSuccess: onCreateAdmin, // set adminDoc query
   });
 
   const createAdmin = createAdminMutation.mutate;
@@ -139,12 +145,35 @@ const useAuth = () => {
     onSuccess: () => ionRouter.push("/products"),
   });
 
+  const onLogOut = () => {
+    queryClient.setQueryData(
+      ["document", { collectionName, documentId: uid }],
+      null,
+      undefined
+    );
+    setFirebaseAuthAdmin(null);
+  };
+
+  const logOutFn = async () => {
+    signOut(auth);
+  };
+
+  const logOutMutation = useMutation({
+    mutationKey: ["admin-log-out"],
+    mutationFn: logOutFn,
+    onSuccess: onLogOut,
+  });
+
+  const logout = logOutMutation.mutate;
+
   return {
     createAdmin,
     createAdminMutation,
     login: loginMutation.mutate,
     loginMutation,
-    user: uid ? (admin as AdminFirestoreDocument) : undefined,
+    logout,
+    logOutMutation,
+    admin: uid ? (admin as AdminFirestoreDocument) : undefined,
     uid,
     isLoggedIn,
   };

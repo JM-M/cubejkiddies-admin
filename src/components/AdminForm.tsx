@@ -3,29 +3,46 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Input from "./Input";
 import Button from "./Button";
 import ErrorText from "./ErrorText";
-import { adminLoginSchema, AdminLogin } from "../constants/schemas/auth";
+import { adminSignUpSchema, AdminSignUp } from "../constants/schemas/auth";
 import useAuth from "../hooks/useAuth";
 import useFirebaseErrorMessage from "../hooks/useFirebaseErrorMessage";
 
-const LoginForm = () => {
-  const { login, loginMutation } = useAuth();
-  const errorMessage = useFirebaseErrorMessage(loginMutation.error as any);
+const AdminForm = () => {
+  const { createAdmin, createAdminMutation } = useAuth();
+  const errorMessage = useFirebaseErrorMessage(
+    createAdminMutation.error as any
+  );
 
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(adminLoginSchema) });
+  } = useForm({
+    resolver: yupResolver(adminSignUpSchema),
+    defaultValues: { password: "123456", confirmPassword: "123456" },
+  });
 
-  const submit = (values: AdminLogin) => {
-    login(values);
+  const submit = (values: AdminSignUp) => {
+    createAdmin(values);
   };
 
   return (
     <form onSubmit={handleSubmit(submit)} className="my-auto">
-      <h2 className="mb-10 font-medium text-lg text-center">Admin Login</h2>
+      <Input
+        label="FIrst name"
+        labelPlacement="floating"
+        {...register("firstName")}
+        errorText={errors.firstName?.message}
+      />
+      <Input
+        label="Last name"
+        labelPlacement="floating"
+        {...register("lastName")}
+        errorText={errors.lastName?.message}
+      />
       <Input
         label="Email"
+        type="email"
         labelPlacement="floating"
         {...register("email")}
         errorText={errors.email?.message}
@@ -37,19 +54,21 @@ const LoginForm = () => {
         {...register("password")}
         errorText={errors.password?.message}
       />
-      <div className="flex justify-end mt-1">
-        <span className="font-medium text-[var(--ion-color-medium)]">
-          Forgot password?
-        </span>
-      </div>
+      <Input
+        type="password"
+        label="Confirm password"
+        labelPlacement="floating"
+        {...register("confirmPassword")}
+        errorText={errors.confirmPassword?.message}
+      />
       <Button
         id="checkoutFormButton"
         className="h-[50px] mt-[30px]"
         type="submit"
         expand="block"
-        loading={loginMutation.isLoading}
+        loading={createAdminMutation.isLoading}
       >
-        Log in
+        Create admin
       </Button>
       {errorMessage && (
         <div className="my-5 text-center">
@@ -60,4 +79,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default AdminForm;

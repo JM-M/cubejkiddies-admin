@@ -34,7 +34,7 @@ const Input = (props: Props & any, ref: unknown) => {
       {isPassword && (
         <IonIcon
           icon={passwordVisible ? eyeOffOutline : eyeOutline}
-          className="h-[20px] w-[20px] mt-auto mb-2"
+          className="h-[20px] w-[20px] mt-6 mb-auto"
           onClick={togglePasswordVisibility}
         />
       )}

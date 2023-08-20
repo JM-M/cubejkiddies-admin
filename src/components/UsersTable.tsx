@@ -4,13 +4,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { format } from "date-fns";
 import Table from "./Table";
 import TableController from "./TableController";
-
-type User = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  createdAt: any;
-};
+import { User } from "../hooks/useUsers";
 
 interface Props {
   users: User[];

@@ -28,6 +28,9 @@ import User from "./pages/User";
 import Login from "./pages/Login";
 import AboutPage from "./pages/About";
 import Contact from "./pages/Contact";
+import ContactMessages from "./pages/ContactMessages";
+import Admins from "./pages/Admins";
+import CreateAdmin from "./pages/CreateAdmin";
 
 import SideMenu from "./components/SideMenu";
 import TopHeader from "./components/TopHeader";
@@ -61,71 +64,88 @@ setupIonicReact();
 
 const queryClient = new QueryClient();
 
-const App: React.FC = () => (
-  <QueryClientProvider client={queryClient}>
-    <IonApp>
-      <IonReactRouter>
-        <SideMenu />
-        <IonPage id="main-content">
-          <TopHeader />
-          <IonRouterOutlet>
-            <IonContent>
-              <div className="container flex flex-col min-h-full py-14">
-                <Route exact path="/orders" component={Orders} />
-                <Route exact path="/orders/:orderId" component={Order} />
-                <Route exact path="/products" component={Products} />
-                <Route exact path="/products/new" component={CreateProduct} />
-                <Route
-                  exact
-                  path="/products/:productId/preview"
-                  component={Product}
-                />
-                <Route
-                  exact
-                  path="/products/:productId/edit"
-                  component={EditProduct}
-                />
-                <Route exact path="/home-slider" component={HomeSlider} />
-                <Route exact path="/home-slider/new" component={NewHomeSlide} />
-                <Route
-                  exact
-                  path="/home-slider/:homeSlideId"
-                  component={EditHomeSlide}
-                />
-                <Route
-                  exact
-                  path="/home-product-sections"
-                  component={ProductSections}
-                />
-                <Route
-                  exact
-                  path="/home-product-sections/:sectionId/edit"
-                  component={EditProductSection}
-                />
-                <Route
-                  exact
-                  path="/home-product-sections/new"
-                  component={CreateProductSection}
-                />
-                <Route exact path="/categories" component={Categories} />
-                <Route
-                  exact
-                  path="/delivery-prices"
-                  component={DeliveryPrices}
-                />
-                <Route exact path="/users" component={Users} />
-                <Route exact path="/users/:uid" component={User} />
-                <Route exact path="/about" component={AboutPage} />
-                <Route exact path="/contact" component={Contact} />
-                <Route exact path="/login" component={Login} />
-                <Route exact path="/" render={() => <Redirect to="/login" />} />
-              </div>
-            </IonContent>
-          </IonRouterOutlet>
-        </IonPage>
-      </IonReactRouter>
-    </IonApp>
-  </QueryClientProvider>
-);
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <IonApp>
+        <IonReactRouter>
+          <SideMenu />
+          <IonPage id="main-content">
+            <TopHeader />
+            <IonRouterOutlet>
+              <IonContent>
+                <div className="container flex flex-col min-h-full py-14">
+                  <Route exact path="/orders" component={Orders} />
+                  <Route exact path="/orders/:orderId" component={Order} />
+                  <Route exact path="/products" component={Products} />
+                  <Route exact path="/products/new" component={CreateProduct} />
+                  <Route
+                    exact
+                    path="/products/:productId/preview"
+                    component={Product}
+                  />
+                  <Route
+                    exact
+                    path="/products/:productId/edit"
+                    component={EditProduct}
+                  />
+                  <Route exact path="/home-slider" component={HomeSlider} />
+                  <Route
+                    exact
+                    path="/home-slider/new"
+                    component={NewHomeSlide}
+                  />
+                  <Route
+                    exact
+                    path="/home-slider/:homeSlideId"
+                    component={EditHomeSlide}
+                  />
+                  <Route
+                    exact
+                    path="/home-product-sections"
+                    component={ProductSections}
+                  />
+                  <Route
+                    exact
+                    path="/home-product-sections/:sectionId/edit"
+                    component={EditProductSection}
+                  />
+                  <Route
+                    exact
+                    path="/home-product-sections/new"
+                    component={CreateProductSection}
+                  />
+                  <Route exact path="/categories" component={Categories} />
+                  <Route
+                    exact
+                    path="/delivery-prices"
+                    component={DeliveryPrices}
+                  />
+                  <Route exact path="/admins" component={Admins} />
+                  <Route exact path="/admins/new" component={CreateAdmin} />
+                  <Route exact path="/users" component={Users} />
+                  <Route exact path="/users/:uid" component={User} />
+                  <Route exact path="/about" component={AboutPage} />
+                  <Route exact path="/contact-settings" component={Contact} />
+                  <Route
+                    exact
+                    path="/contact-messages"
+                    component={ContactMessages}
+                  />
+                  <Route exact path="/login" component={Login} />
+                  <Route
+                    exact
+                    path="/"
+                    render={() => <Redirect to="/login" />}
+                  />
+                </div>
+              </IonContent>
+            </IonRouterOutlet>
+          </IonPage>
+        </IonReactRouter>
+      </IonApp>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

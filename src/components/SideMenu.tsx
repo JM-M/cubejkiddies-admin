@@ -9,24 +9,36 @@ import {
   useIonRouter,
 } from "@ionic/react";
 import cx from "classnames";
+import useAuth from "../hooks/useAuth";
 
-const links: { display: string; path: string }[] = [
-  { display: "Orders", path: "/orders" },
-  // { display: "Delivery prices", path: "/delivery-prices" },
-  { display: "Products", path: "/products" },
-  { display: "Home slider", path: "/home-slider" },
-  { display: "Home product sections", path: "/home-product-sections" },
-  { display: "Categories", path: "/categories" },
-  { display: "Users", path: "/users" },
-  // { display: "Admins", path: "/admins" },
-  { display: "About", path: "/about" },
-  { display: "Contact", path: "/contact" },
-];
+type LinkType = { display: string; path: string };
 
 const SideMenu = () => {
   const {
     routeInfo: { pathname },
   } = useIonRouter();
+
+  const { admin, isLoggedIn } = useAuth();
+
+  const links: LinkType[] = [
+    { display: "Orders", path: "/orders" },
+    // { display: "Delivery prices", path: "/delivery-prices" },
+    { display: "Products", path: "/products" },
+    { display: "Home slider", path: "/home-slider" },
+    { display: "Home product sections", path: "/home-product-sections" },
+    { display: "Categories", path: "/categories" },
+    { display: "Users", path: "/users" },
+    { display: "Admins", path: "/admins" },
+    { display: "About", path: "/about" },
+    { display: "Contact settings", path: "/contact-settings" },
+    { display: "Contact messages", path: "/contact-messages" },
+  ]
+    .sort((a: LinkType, b: LinkType) => {
+      if (a.display > b.display) return 1;
+      if (a.display < b.display) return -1;
+      return 0;
+    })
+    .filter(({ path }: LinkType) => path !== "/admins" || admin?.primary);
 
   return (
     <IonMenu type="push" contentId="main-content">
