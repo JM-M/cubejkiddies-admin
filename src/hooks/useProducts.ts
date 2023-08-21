@@ -1,6 +1,6 @@
 import { Filesystem, Directory } from "@capacitor/filesystem";
+import { useIonRouter } from "@ionic/react";
 import { v4 as uuidv4 } from "uuid";
-
 import { Product } from "../constants/schemas/product";
 import { PhotoFile, base64ToImage } from "./usePhotoGallery";
 import useFirebaseStorage from "./useFirebaseStorage";
@@ -9,6 +9,7 @@ import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
 import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
 import { getProductImages } from "./useProductImages";
 import useCategories from "./useCategories";
+import useFirestoreDocumentDeletion from "./useFirestoreDocumentDeletion";
 
 export interface SortOption {
   field: string;
@@ -24,6 +25,8 @@ const collectionName = "products";
 
 const useProducts = (props: Props = {}) => {
   const { productId, sortBy = { field: "name", reverse: false } } = props;
+
+  const ionRouter = useIonRouter();
 
   const { uploadToFirebaseStorage } = useFirebaseStorage();
 
@@ -186,11 +189,21 @@ const useProducts = (props: Props = {}) => {
     documentId: productId,
   });
 
+  const { firestoreDocumentDeletion: productDeletionMutation } =
+    useFirestoreDocumentDeletion({
+      collectionName,
+      onSuccess: () => ionRouter.push("/products"),
+    });
+
+  const deleteProduct = productDeletionMutation.mutate;
+
   return {
     saveProduct,
     productsQuery,
     productQuery,
     productMutation: firestoreDocumentMutation,
+    deleteProduct,
+    productDeletionMutation,
   };
 };
 

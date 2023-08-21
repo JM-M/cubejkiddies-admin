@@ -9,8 +9,8 @@ import ProductCarousel from "./ProductCarousel";
 import ProductInfo from "./ProductInfo";
 import ProductVariations from "./ProductVariations";
 import ProductDescription from "./ProductDescription";
-import useProducts from "../hooks/useProducts";
 import PageLoader from "./PageLoader";
+import useProducts from "../hooks/useProducts";
 
 interface Props {
   productId: string;
@@ -21,6 +21,8 @@ const ProductPreview = ({ productId }: Props) => {
 
   const {
     productQuery: { data, isLoading },
+    deleteProduct,
+    productDeletionMutation,
   } = useProducts({
     productId,
   });
@@ -52,7 +54,7 @@ const ProductPreview = ({ productId }: Props) => {
     }, []);
   }, [stocks, variant, variantKeys]);
 
-  if (isLoading) return <PageLoader />;
+  if (isLoading || productDeletionMutation.isLoading) return <PageLoader />;
   if (!data)
     return (
       <div className="h-fit w-fit m-auto text-gray-500 text-center">
@@ -80,7 +82,10 @@ const ProductPreview = ({ productId }: Props) => {
           >
             <IonIcon icon={pencilOutline}></IonIcon>
           </IonFabButton>
-          <IonFabButton color="danger">
+          <IonFabButton
+            color="danger"
+            onClick={() => deleteProduct([productId])}
+          >
             <IonIcon icon={trashBinOutline}></IonIcon>
           </IonFabButton>
         </IonFabList>
