@@ -1,7 +1,7 @@
 import Page from '../components/Page';
 import ProductSectionForm from '../components/ProductSectionForm';
 
-const CreateProductSection = () => {
+const CreateCustomProductSection = () => {
   return (
     <Page
       title='Create product section'
@@ -13,4 +13,4 @@ const CreateProductSection = () => {
   );
 };
 
-export default CreateProductSection;
+export default CreateCustomProductSection;

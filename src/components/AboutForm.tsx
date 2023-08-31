@@ -1,18 +1,21 @@
-import { useEffect } from "react";
-import { IonItem, IonTextarea, IonButton, IonSpinner } from "@ionic/react";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import cx from "classnames";
+import { useEffect } from 'react';
+import { IonItem, IonTextarea, IonButton, IonSpinner } from '@ionic/react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
+import cx from 'classnames';
 // import ImageUpload from "./ImageUpload";
-import PageLoader from "./PageLoader";
-import aboutSchema, { About } from "../constants/schemas/about";
-import useAbout from "../hooks/useAbout";
+import PageLoader from './PageLoader';
+import aboutSchema, { About } from '../constants/schemas/about';
+import useAbout from '../hooks/useAbout';
+import SlateEditor from './slate/Editor';
+import ErrorText from './ErrorText';
 
 const AboutForm = () => {
   const { about = {}, aboutQuery, update, aboutMutation } = useAbout();
 
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     formState: { errors, touchedFields = {} },
@@ -32,7 +35,8 @@ const AboutForm = () => {
     }
   }, [touched, about, setValue]);
 
-  const submit = (values: About) => {
+  const submit = ({ content, ...rest }: About) => {
+    const values = { content: JSON.stringify(content), ...rest };
     update(values);
   };
 
@@ -42,33 +46,36 @@ const AboutForm = () => {
 
   return (
     <form onSubmit={handleSubmit(submit)}>
-      <IonItem
-        className={cx({
-          "ion-invalid": !!errors.text,
-          "ion-valid": !errors.text,
-        })}
-      >
-        <IonTextarea
-          label="Text"
-          labelPlacement="floating"
-          {...register("text")}
-          errorText={errors.text?.message as any}
-          autoGrow
-        />
-      </IonItem>
+      <Controller
+        control={control}
+        name='content'
+        render={({ field: { name }, fieldState: { error } }) => {
+          let initialValue;
+          if (about.content) initialValue = JSON.parse(about.content);
+          return (
+            <>
+              <SlateEditor
+                initialValue={initialValue}
+                onChange={(v: any) => setValue(name, v, { shouldTouch: true })}
+              />
+              <ErrorText text={error?.message} />
+            </>
+          );
+        }}
+      />
       <IonButton
-        id="checkoutFormButton"
-        className="h-[50px] mt-[30px]"
-        type="submit"
-        expand="block"
+        id='checkoutFormButton'
+        className='h-[50px] mt-[30px]'
+        type='submit'
+        expand='block'
         disabled={uploading || !touched}
       >
         {uploading ? (
           <>
-            <IonSpinner name="dots" className="inline-block mr-3" /> submitting
+            <IonSpinner name='dots' className='inline-block mr-3' /> submitting
           </>
         ) : (
-          "submit"
+          'submit'
         )}
       </IonButton>
     </form>

@@ -1,23 +1,18 @@
-import { useState, useEffect } from "react";
-import { useIonRouter } from "@ionic/react";
+import { useState, useEffect, useContext } from 'react';
+import { useIonRouter } from '@ionic/react';
 import {
-  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
   User as FirebaseUser,
-  updatePassword,
-  sendPasswordResetEmail,
-} from "firebase/auth";
-import { Timestamp } from "firebase/firestore";
-import axios from "axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { auth } from "../../firebase";
-import { AdminLogin, AdminSignUp } from "../constants/schemas/auth";
-import useFirestoreDocumentMutation from "./useFirestoreDocumentMutation";
-import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
+} from 'firebase/auth';
+import { Timestamp } from 'firebase/firestore';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { auth } from '../../firebase';
+import { AdminLogin } from '../constants/schemas/auth';
+import useFirestoreDocumentMutation from './useFirestoreDocumentMutation';
+import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
+import AutoAuthenticatingContext from '../contexts/autoAuthenticating';
 
 export interface AdminFirestoreDocument {
   email: string;
@@ -28,11 +23,13 @@ export interface AdminFirestoreDocument {
   primary?: boolean;
 }
 
-const collectionName = "admins";
+const collectionName = 'admins';
 const useAuth = () => {
   const [firebaseAuthAdmin, setFirebaseAuthAdmin] =
-    useState<FirebaseUser | null>();
-  const [autoAuthenticating, setAutoAuthenticating] = useState<boolean>(true);
+    useState<FirebaseUser | null>(auth.currentUser);
+  const [autoAuthenticating, setAutoAuthenticating] = useContext(
+    AutoAuthenticatingContext
+  );
   const { uid } = firebaseAuthAdmin || {};
 
   const ionRouter = useIonRouter();
@@ -51,15 +48,6 @@ const useAuth = () => {
       invalidateCollectionQuery: false,
       invalidateDocumentQuery: false,
     });
-
-  const saveCreatedAdminToFirestore = (adminDoc: AdminFirestoreDocument) => {
-    const { uid } = adminDoc;
-    return adminDocMutation.mutateAsync({
-      document: adminDoc,
-      documentId: uid,
-      addTimestamp: true,
-    });
-  };
 
   const onAdminDocFetch = (adminDoc: AdminFirestoreDocument) => {
     const uid = adminDoc?.uid;
@@ -90,64 +78,39 @@ const useAuth = () => {
   const isLoggedIn = !autoAuthenticating && !!uid;
 
   useEffect(() => {
-    if (!isLoggedIn && ionRouter?.routeInfo.pathname !== "/login")
-      ionRouter.push("/login");
+    const pathname = ionRouter?.routeInfo.pathname;
+    if (!isLoggedIn && pathname !== '/login')
+      ionRouter.push(`/login?returnUrl=${pathname}`);
   }, [isLoggedIn, ionRouter]);
 
   // using an effect ensures that autoAuthenticating is only turned to false when admin state has been set
   useEffect(() => {
     if (admin && autoAuthenticating) {
       setAutoAuthenticating(false);
-      ionRouter.push("/products");
+      ionRouter.push('/products');
     }
   }, [admin, autoAuthenticating, ionRouter]);
-
-  const createAdminFn = async ({
-    email,
-    password,
-    firstName,
-    lastName,
-  }: AdminSignUp) => {
-    const credential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    const uid = credential.user.uid;
-    const { data: adminDoc } = await saveCreatedAdminToFirestore({
-      uid,
-      email: credential.user.email as string,
-      firstName,
-      lastName,
-    });
-    return adminDoc;
-  };
-
-  const onCreateAdmin = (admin: AdminFirestoreDocument) => {
-    ionRouter.push("/admins");
-  };
-
-  const createAdminMutation = useMutation({
-    mutationKey: ["create-admin-doc"],
-    mutationFn: createAdminFn,
-    onSuccess: onCreateAdmin, // set adminDoc query
-  });
-
-  const createAdmin = createAdminMutation.mutate;
 
   const loginFn = async ({ email, password }: AdminLogin) => {
     await signInWithEmailAndPassword(auth, email, password);
   };
 
   const loginMutation = useMutation({
-    mutationKey: ["admin-sign-in"],
+    mutationKey: ['admin-sign-in'],
     mutationFn: loginFn,
-    onSuccess: () => ionRouter.push("/products"),
+    onSuccess: () => {
+      let destination = '/products';
+      const params: string = ionRouter.routeInfo.search.split('?')[1];
+      const searchParams = new URLSearchParams(params);
+      const returnUrl = searchParams.get('returnUrl');
+      if (returnUrl) destination = returnUrl;
+      ionRouter.push(destination);
+    },
   });
 
   const onLogOut = () => {
     queryClient.setQueryData(
-      ["document", { collectionName, documentId: uid }],
+      ['document', { collectionName, documentId: uid }],
       null,
       undefined
     );
@@ -159,7 +122,7 @@ const useAuth = () => {
   };
 
   const logOutMutation = useMutation({
-    mutationKey: ["admin-log-out"],
+    mutationKey: ['admin-log-out'],
     mutationFn: logOutFn,
     onSuccess: onLogOut,
   });
@@ -167,8 +130,6 @@ const useAuth = () => {
   const logout = logOutMutation.mutate;
 
   return {
-    createAdmin,
-    createAdminMutation,
     login: loginMutation.mutate,
     loginMutation,
     logout,

@@ -1,0 +1,32 @@
+.Paragraph {
+  @apply mb-5 whitespace-normal break-words;
+}
+
+[data-slate-editor='true'] .Paragraph {
+  white-space: unset !important;
+}
+
+.HeadingOne {
+  @apply text-2xl;
+}
+
+.HeadingTwo {
+  @apply text-xl;
+}
+
+.BulletedList,
+.NumberedList {
+  @apply !pl-5;
+}
+
+.BulletedList {
+  @apply !list-disc;
+}
+
+.NumberedList {
+  @apply !list-decimal;
+}
+
+.ListItem {
+  @apply mb-2;
+}

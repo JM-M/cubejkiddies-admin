@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from 'react';
 import {
   collection,
   query,
@@ -11,9 +11,9 @@ import {
   getCountFromServer,
   where,
   documentId,
-} from "firebase/firestore";
-import { useQuery } from "@tanstack/react-query";
-import { db } from "../../firebase";
+} from 'firebase/firestore';
+import { useQuery } from '@tanstack/react-query';
+import { db } from '../../firebase';
 
 interface FirestoreInfiniteQuery {
   collectionName: string;
@@ -24,6 +24,7 @@ interface FirestoreInfiniteQuery {
     pageSize: number;
   };
   ids?: string[];
+  transformDocuments?: (docs: any[]) => Promise<any[]>;
 }
 
 const useFirestoreCollectionQuery = ({
@@ -33,6 +34,7 @@ const useFirestoreCollectionQuery = ({
   reverseOrder = false,
   options: { pageSize },
   ids = [],
+  transformDocuments,
 }: FirestoreInfiniteQuery) => {
   const [pageNum, setPageNum] = useState<number>(1);
   const [totalDocuments, setTotalDocuments] = useState<any>(1);
@@ -59,14 +61,14 @@ const useFirestoreCollectionQuery = ({
     const [_key] = queryKey;
     const collectionRef = collection(db, collectionName);
     let queries: any[] = orderByField
-      ? [orderBy(orderByField, reverseOrder ? "asc" : "desc")]
+      ? [orderBy(orderByField, reverseOrder ? 'asc' : 'desc')]
       : [];
     if (match) {
       Object.entries(match).forEach(([key, value]) => {
-        if (value) queries.unshift(where(key, "==", value));
+        if (value) queries.unshift(where(key, '==', value));
       });
     }
-    if (ids.length) queries = [where(documentId(), "in", ids)];
+    if (ids.length) queries = [where(documentId(), 'in', ids)];
     let prevCursor, nextCursor;
     if (pageNum > lastPageNum) {
       nextCursor = getNextCursor();
@@ -89,7 +91,12 @@ const useFirestoreCollectionQuery = ({
     }
 
     lastPageNumRef.current = pageNum;
-    return documentSnapshots.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    let documents = documentSnapshots.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+    if (transformDocuments) documents = await transformDocuments(documents);
+    return documents;
   };
 
   const fetchNextPage = () => setPageNum((n) => n + 1); // handle hasNextPage
@@ -97,7 +104,7 @@ const useFirestoreCollectionQuery = ({
   const fetchPreviousPage = () => !!pageNum && setPageNum((n) => n - 1);
   const queryState = useQuery({
     queryKey: [
-      "collection",
+      'collection',
       collectionName,
       match,
       pageNum,

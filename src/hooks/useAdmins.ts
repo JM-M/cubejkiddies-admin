@@ -1,10 +1,14 @@
-import { useEffect } from "react";
-import { useIonRouter } from "@ionic/react";
-import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
-import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
-import useFirestoreDocumentMutation from "./useFirestoreDocumentMutation";
-import { AdminSignUp } from "../constants/schemas/auth";
-import useAuth from "./useAuth";
+import { useEffect } from 'react';
+import { useIonRouter } from '@ionic/react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
+import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
+import useFirestoreDocumentMutation from './useFirestoreDocumentMutation';
+import { AdminSignUp } from '../constants/schemas/auth';
+import useAuth from './useAuth';
+import useFirestoreDocumentDeletion from './useFirestoreDocumentDeletion';
+import { AdminFirestoreDocument } from './useAuth';
 
 export type Admin = {
   email: string;
@@ -19,17 +23,18 @@ interface Props {
   uid?: string;
 }
 
-const collectionName = "admins";
+const collectionName = 'admins';
 
 const useAdmins = (props: Props = {}) => {
-  const { uid = "" } = props;
+  const { uid = '' } = props;
 
   const ionRouter = useIonRouter();
 
-  const { admin } = useAuth();
+  const queryClient = useQueryClient();
 
+  const { admin } = useAuth();
   useEffect(() => {
-    if (admin?.primary) ionRouter.push("/products");
+    if (!admin?.primary) ionRouter.push('/products');
   }, [admin]);
 
   const adminsQuery = useFirestoreCollectionQuery({
@@ -43,14 +48,51 @@ const useAdmins = (props: Props = {}) => {
     documentId: uid,
   });
 
-  const { firestoreDocumentMutation: createAdminMutation } =
-    useFirestoreDocumentMutation({ collectionName });
+  const { firestoreDocumentMutation: adminDocMutation } =
+    useFirestoreDocumentMutation({
+      collectionName,
+      invalidateCollectionQuery: true,
+      invalidateDocumentQuery: true,
+    });
 
-  const createAdmin = async (admin: AdminSignUp) => {
-    console.log(admin);
+  const createAdminFn = async (adminData: AdminSignUp) => {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL_DEV}/admins`,
+      adminData
+    );
+    return data;
   };
 
-  return { admins, adminsQuery, adminQuery, createAdmin, createAdminMutation };
+  const onCreateAdmin = () => {
+    queryClient.invalidateQueries(['collection', collectionName]);
+    ionRouter.push('/admins');
+  };
+
+  const createAdminMutation = useMutation({
+    mutationKey: ['create-admin-doc'],
+    mutationFn: createAdminFn,
+    onSuccess: onCreateAdmin, // set adminDoc query
+  });
+
+  const createAdmin = createAdminMutation.mutate;
+
+  const { firestoreDocumentDeletion: adminDeletionMutation } =
+    useFirestoreDocumentDeletion({
+      collectionName,
+      onSuccess: () => ionRouter.push('/admins'),
+    });
+
+  const deleteAdmin = () => adminDeletionMutation.mutate([uid]);
+
+  return {
+    admins,
+    adminsQuery,
+    adminQuery,
+    createAdmin,
+    createAdminMutation,
+    deleteAdmin,
+    adminDeletionMutation,
+  };
 };
 
 export default useAdmins;

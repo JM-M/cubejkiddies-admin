@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   IonModal,
   IonHeader,
@@ -9,13 +9,13 @@ import {
   IonButton,
   IonIcon,
   IonText,
-} from "@ionic/react";
-import { addOutline, closeOutline, pencilOutline } from "ionicons/icons";
-import cx from "classnames";
-import ProductsDisplay from "./ProductsDisplay";
-import ProductGrid from "./ProductGrid";
-import ErrorText from "./ErrorText";
-import { Product } from "../constants/schemas/product";
+} from '@ionic/react';
+import { addOutline, closeOutline, pencilOutline } from 'ionicons/icons';
+import cx from 'classnames';
+import ProductsDisplay from './ProductsDisplay';
+import ProductGrid from './ProductGrid';
+import ErrorText from './ErrorText';
+import { Product } from '../constants/schemas/product';
 
 interface Props {
   onSelectionChange?: (selection: boolean, product: Product) => any;
@@ -43,16 +43,16 @@ const ProductSelector = (props: Props) => {
   return (
     <>
       <IonModal isOpen={!disabled && open}>
-        <IonHeader className="ion-no-border">
+        <IonHeader className='ion-no-border'>
           <IonToolbar>
-            <IonButtons slot="start">
+            <IonButtons slot='start'>
               <IonButton
-                className="rounded-3xl overflow-hidden"
+                className='rounded-3xl overflow-hidden'
                 onClick={closeModal}
               >
                 <IonIcon
                   icon={closeOutline}
-                  className="block h-[30px] w-w[30px]"
+                  className='block h-[30px] w-w[30px]'
                 />
               </IonButton>
             </IonButtons>
@@ -60,8 +60,8 @@ const ProductSelector = (props: Props) => {
           </IonToolbar>
         </IonHeader>
 
-        <IonContent className="ion-no-padding">
-          <div className="container py-5 min-h-full">
+        <IonContent className='ion-no-padding'>
+          <div className='container py-5 min-h-full'>
             <ProductsDisplay
               {...props}
               initialSelection={selectedProducts}
@@ -69,8 +69,8 @@ const ProductSelector = (props: Props) => {
               selectable
             />
             <IonButton
-              fill="solid"
-              className="flex w-fit ml-auto"
+              fill='solid'
+              className='flex w-fit ml-auto'
               onClick={closeModal}
             >
               Done
@@ -78,28 +78,28 @@ const ProductSelector = (props: Props) => {
           </div>
         </IonContent>
       </IonModal>
-      <div className={cx("my-5", { disabled })}>
+      <div className={cx('my-5', { disabled })}>
         {hasSelectedProducts ? (
           <ProductGrid products={selectedProducts} />
         ) : (
-          <span className="text-gray-500">
-            No {"product" + (multiselect ? "s" : "")} selected
+          <span className='text-gray-500'>
+            No {'product' + (multiselect ? 's' : '')} selected
           </span>
         )}
       </div>
-      <div className="mt-10">
+      <div className='mt-10'>
         <IonButton
-          fill="outline"
-          className="flex w-fit ml-auto"
+          fill='outline'
+          className='flex w-fit ml-auto'
           onClick={openModal}
           disabled={disabled}
         >
           <IonIcon
             icon={hasSelectedProducts ? pencilOutline : addOutline}
-            className="h-[20px] w-[20px] mr-2"
+            className='h-[20px] w-[20px] mr-2'
           />
-          {hasSelectedProducts ? "Edit" : "Add"}{" "}
-          {"product" + (multiselect ? "s" : "")}
+          {hasSelectedProducts ? 'Edit' : 'Add'}{' '}
+          {'product' + (multiselect ? 's' : '')}
         </IonButton>
       </div>
       <ErrorText text={error} />

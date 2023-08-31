@@ -41,7 +41,7 @@ const UserDetails = ({ uid }: Props) => {
       <h3 className='mt-5 text-lg'>Address</h3>
       <div>
         {address ? (
-          <Address />
+          <Address {...address} />
         ) : (
           <span className='text-gray-500'>Not available</span>
         )}

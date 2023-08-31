@@ -5,12 +5,14 @@ interface Props {
   title: string;
   numProducts: number;
   sectionId: string;
+  category?: string;
 }
 
 const ProductSectionCard = ({
   title = '',
   numProducts = 0,
   sectionId,
+  category,
 }: Props) => {
   const ionRouter = useIonRouter();
 
