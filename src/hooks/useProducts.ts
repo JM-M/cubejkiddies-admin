@@ -77,7 +77,7 @@ const useProducts = (props: Props = {}) => {
       path: image.filepath,
       directory: Directory.Data,
     });
-    const blob = base64ToImage(file.data);
+    const blob = base64ToImage(file.data as string);
     const url = await uploadToFirebaseStorage({
       data: blob,
       path: `images/products/${uuidv4()}`,
@@ -189,10 +189,27 @@ const useProducts = (props: Props = {}) => {
     documentId: productId,
   });
 
+  const { firestoreDocumentDeletion: productBuyersDeletionMutation } =
+    useFirestoreDocumentDeletion({
+      collectionName: `products/${productId}/buyers`,
+      onSuccess: () => ionRouter.push("/products"),
+    });
+
+  const { firestoreDocumentDeletion: productReviewsDeletionMutation } =
+    useFirestoreDocumentDeletion({
+      collectionName: `products/${productId}/reviews`,
+      onSuccess: () => ionRouter.push("/products"),
+    });
+
   const { firestoreDocumentDeletion: productDeletionMutation } =
     useFirestoreDocumentDeletion({
       collectionName,
-      onSuccess: () => ionRouter.push("/products"),
+      onSuccess: ([productId]: string[]) => {
+        productBuyersDeletionMutation.mutate([productId]);
+        productReviewsDeletionMutation.mutate([productId]);
+        ionRouter.push("/products");
+      },
+      deleteAlgoliaRecord: true,
     });
 
   const deleteProduct = productDeletionMutation.mutate;

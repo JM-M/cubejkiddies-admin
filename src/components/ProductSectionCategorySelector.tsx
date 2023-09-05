@@ -66,10 +66,9 @@ const ProductSectionCategorySelector: React.FC<Props> = ({ sectionId }) => {
   const submit = (values: ProductSection) => {
     if (sectionId) return saveProductSection({ ...values, id: sectionId });
     saveProductSection(values);
-    console.log(values);
   };
 
-  if (categoriesQuery.isLoading) {
+  if (categoriesQuery.isLoading || productSectionQuery.isLoading) {
     return <PageLoader />;
   }
 

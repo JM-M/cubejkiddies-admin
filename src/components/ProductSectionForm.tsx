@@ -67,7 +67,6 @@ const ProductSectionForm = ({ sectionId }: Props) => {
   }, [productSection]);
 
   const { productsQuery } = useProductSection(productSection);
-  // console.log(productsQuery.data);
 
   useEffect(() => {
     const { data: products } = productsQuery;
@@ -89,7 +88,6 @@ const ProductSectionForm = ({ sectionId }: Props) => {
 
   const onSelectionChange = (selection: boolean, product: Product) => {
     const products = watch('products') || [];
-    console.log(product);
     if (selection) {
       setValue('products', [...products, product]);
     } else {
@@ -101,7 +99,7 @@ const ProductSectionForm = ({ sectionId }: Props) => {
   };
 
   const submitting = productSectionMutation.isLoading;
-
+  
   const loading = productSectionQuery.isLoading || productsQuery.isLoading;
   if (loading) return <PageLoader />;
 

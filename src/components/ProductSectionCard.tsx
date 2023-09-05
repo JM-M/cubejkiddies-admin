@@ -3,16 +3,12 @@ import { chevronForwardOutline } from 'ionicons/icons';
 
 interface Props {
   title: string;
-  numProducts: number;
   sectionId: string;
-  category?: string;
 }
 
 const ProductSectionCard = ({
   title = '',
-  numProducts = 0,
-  sectionId,
-  category,
+  sectionId
 }: Props) => {
   const ionRouter = useIonRouter();
 
@@ -28,7 +24,6 @@ const ProductSectionCard = ({
     >
       <div>
         <h3 className='text-lg font-medium'>{title}</h3>
-        <div className='text-gray-500'>{numProducts} Products</div>
       </div>
       <IonIcon
         icon={chevronForwardOutline}

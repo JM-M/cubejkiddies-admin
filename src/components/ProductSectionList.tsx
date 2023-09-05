@@ -13,14 +13,12 @@ const ProductSectionList = () => {
     <ul className='my-5'>
       {productSectionsQuery.data.map(
         (productSection: DatabaseProductSection, index: number) => {
-          const { title, products = [], id = '', category } = productSection;
+          const { title, id = '' } = productSection;
           return (
             <li key={index} className='mb-5'>
               <ProductSectionCard
                 title={title}
-                numProducts={products?.length || 0}
                 sectionId={id}
-                category={category}
               />
             </li>
           );

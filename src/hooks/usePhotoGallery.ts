@@ -96,7 +96,7 @@ export function usePhotoGallery({ storageKey = DEFAULT_STORAGE_KEY }: Props) {
       const file = await Filesystem.readFile({
         path: photo.path!,
       });
-      base64Data = file.data;
+      base64Data = file.data as string;
     } else {
       base64Data = await base64FromPath(photo.webPath!);
     }

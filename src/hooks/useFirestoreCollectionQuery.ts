@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 import {
   collection,
   query,
@@ -11,9 +11,9 @@ import {
   getCountFromServer,
   where,
   documentId,
-} from 'firebase/firestore';
-import { useQuery } from '@tanstack/react-query';
-import { db } from '../../firebase';
+} from "firebase/firestore";
+import { useQuery } from "@tanstack/react-query";
+import { db } from "../../firebase";
 
 interface FirestoreInfiniteQuery {
   collectionName: string;
@@ -61,14 +61,14 @@ const useFirestoreCollectionQuery = ({
     const [_key] = queryKey;
     const collectionRef = collection(db, collectionName);
     let queries: any[] = orderByField
-      ? [orderBy(orderByField, reverseOrder ? 'asc' : 'desc')]
+      ? [orderBy(orderByField, reverseOrder ? "asc" : "desc")]
       : [];
     if (match) {
       Object.entries(match).forEach(([key, value]) => {
-        if (value) queries.unshift(where(key, '==', value));
+        if (value) queries.unshift(where(key, "==", value));
       });
     }
-    if (ids.length) queries = [where(documentId(), 'in', ids)];
+    if (ids.length) queries = [where(documentId(), "in", ids)];
     let prevCursor, nextCursor;
     if (pageNum > lastPageNum) {
       nextCursor = getNextCursor();
@@ -104,7 +104,7 @@ const useFirestoreCollectionQuery = ({
   const fetchPreviousPage = () => !!pageNum && setPageNum((n) => n - 1);
   const queryState = useQuery({
     queryKey: [
-      'collection',
+      "collection",
       collectionName,
       match,
       pageNum,

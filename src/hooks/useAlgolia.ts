@@ -13,7 +13,7 @@ interface Props {
   index: string;
 }
 
-const useAlgolia = (props: Props = { index: "" }) => {
+const useAlgolia = (props: Props) => {
   const index = useMemo(() => client.initIndex(props.index), [props.index]);
   const noIndex = !props.index;
 
@@ -42,7 +42,25 @@ const useAlgolia = (props: Props = { index: "" }) => {
 
   const search = searchMutation.mutate;
 
-  return { search, searchMutation, saveRecord, saveRecordMutation };
+  const deleteRecordFn = async (recordIds: string[]) => {
+    await index.deleteObjects(recordIds).wait();
+  };
+
+  const deleteRecordMutation = useMutation({
+    mutationKey: ["delete-algolia-record"],
+    mutationFn: deleteRecordFn,
+  });
+
+  const deleteRecord = deleteRecordMutation.mutate;
+
+  return {
+    search,
+    searchMutation,
+    saveRecord,
+    saveRecordMutation,
+    deleteRecord,
+    deleteRecordMutation,
+  };
 };
 
 export default useAlgolia;

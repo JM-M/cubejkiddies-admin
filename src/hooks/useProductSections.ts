@@ -1,29 +1,36 @@
-import { useIonRouter } from '@ionic/react';
-import { v4 as uuidv4 } from 'uuid';
-import useFirestoreDocumentMutation from './useFirestoreDocumentMutation';
-import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
-import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
-import { ProductSection } from '../constants/schemas/productSection';
-import useFirestoreDocumentDeletion from './useFirestoreDocumentDeletion';
+import { useMemo } from "react";
+import { useIonRouter } from "@ionic/react";
+import { v4 as uuidv4 } from "uuid";
+import useFirestoreDocumentMutation from "./useFirestoreDocumentMutation";
+import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
+import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
+import { ProductSection } from "../constants/schemas/productSection";
+import useFirestoreDocumentDeletion from "./useFirestoreDocumentDeletion";
 
 export interface DatabaseProductSection
-  extends Omit<ProductSection, 'products'> {}
+  extends Omit<ProductSection, "products"> {}
 
 interface Props {
   productSectionId?: string;
   onMutationSuccess?: Function;
 }
 
-const collectionName = 'productSections';
+const collectionName = "productSections";
 
 const useProductSections = (props: Props | undefined = {}) => {
-  const { productSectionId, onMutationSuccess = () => null } = props;
+  const { onMutationSuccess = () => null } = props;
+
+  const productSectionId = useMemo(() => {
+    const { productSectionId } = props;
+    if (!productSectionId) return uuidv4();
+    return productSectionId;
+  }, [props.productSectionId]);
 
   const ionRouter = useIonRouter();
 
   const productSectionsQuery = useFirestoreCollectionQuery({
     collectionName,
-    orderByField: 'title',
+    orderByField: "title",
     reverseOrder: false,
     options: {
       pageSize: 100,
@@ -42,7 +49,7 @@ const useProductSections = (props: Props | undefined = {}) => {
 
   const saveProductSection = async (productSection: ProductSection) => {
     const { products = [], ...rest } = productSection;
-    const documentId = productSection.id || uuidv4();
+    const documentId = productSectionId;
     const document: DatabaseProductSection = {
       ...rest,
     };
@@ -53,7 +60,7 @@ const useProductSections = (props: Props | undefined = {}) => {
         documentId: productId!,
       });
     }
-    firestoreDocumentMutation.mutate({
+    firestoreDocumentMutation.mutateAsync({
       document,
       documentId,
       addTimestamp: true,
@@ -62,13 +69,13 @@ const useProductSections = (props: Props | undefined = {}) => {
 
   const productSectionQuery = useFirestoreDocumentQuery({
     collectionName,
-    documentId: productSectionId,
+    documentId: props.productSectionId,
   });
 
   const { firestoreDocumentDeletion: productSectionDeletionMutation } =
     useFirestoreDocumentDeletion({
       collectionName,
-      onSuccess: () => ionRouter.push('/home-product-sections'),
+      onSuccess: () => ionRouter.push("/home-product-sections"),
     });
 
   const deleteProductSection = () => {

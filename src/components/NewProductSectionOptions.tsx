@@ -27,7 +27,7 @@ const NewProductSectionOptions: React.FC = () => {
     >
       <IonHeader className='ion-no-border'>
         <IonToolbar>
-          <IonTitle>Product section options</IonTitle>
+          <IonTitle>Section options</IonTitle>
           <IonButtons slot='end'>
             <IonButton onClick={closeModal}>
               <IonIcon icon={closeOutline} className='h-[24px] w-[24px]' />
