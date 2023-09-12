@@ -5,7 +5,7 @@ import Variation from './Variation';
 
 type Variation = { name: string; options: string[]; id: string };
 
-const defaultVariations = ['color', 'sizes'];
+const defaultVariations = ['colors', 'sizes'];
 
 const CustomVariations: React.FC<{
   variations: any;
@@ -72,7 +72,7 @@ const CustomVariations: React.FC<{
         onClick={addEmptyVariation}
       >
         <IonIcon icon={addOutline} className='h-[20px] w-[20px] mr-2' />
-        Add variation
+        Add attribute
       </IonButton>
     </IonList>
   );

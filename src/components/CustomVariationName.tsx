@@ -24,7 +24,7 @@ const CustomVariationName: React.FC<{
   return (
     <IonItem>
       <IonInput
-        label='Variation'
+        label='Attribute name'
         labelPlacement='floating'
         placeholder='E.g material'
         value={name}

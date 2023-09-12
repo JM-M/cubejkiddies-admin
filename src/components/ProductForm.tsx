@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from 'react';
 import {
   IonItem,
   IonInput,
@@ -6,30 +6,30 @@ import {
   IonButton,
   IonSpinner,
   useIonRouter,
-} from "@ionic/react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import cx from "classnames";
+} from '@ionic/react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import cx from 'classnames';
 
-import Typeahead from "./Typeahead";
-import DefaultVariations from "./DefaultVariations";
-import CustomVariations from "./CustomVariations";
-import VariationCombinations from "./VariationCombinations";
-import PageLoader from "./PageLoader";
+import Typeahead from './Typeahead';
+import DefaultVariations from './DefaultVariations';
+import CustomVariations from './CustomVariations';
+import VariationCombinations from './VariationCombinations';
+import PageLoader from './PageLoader';
 
-import { NAIRA } from "../constants/unicode";
-import productSchema, { Product } from "../constants/schemas/product";
-import useProducts from "../hooks/useProducts";
-import useCategories, { Category } from "../hooks/useCategories";
+import { NAIRA } from '../constants/unicode';
+import productSchema, { Product } from '../constants/schemas/product';
+import useProducts from '../hooks/useProducts';
+import useCategories, { Category } from '../hooks/useCategories';
 
 type FieldType =
-  | "name"
-  | "category"
-  | "description"
-  | "price"
-  | "discount"
-  | "variations"
-  | "stocks"
+  | 'name'
+  | 'category'
+  | 'description'
+  | 'price'
+  | 'discount'
+  | 'variations'
+  | 'stocks'
   | `stocks.${number}`
   | `stocks.${number}.images`
   | `stocks.${number}.quantity`
@@ -79,7 +79,7 @@ const ProductForm = ({ productId }: Props) => {
   useEffect(() => {
     if (!product || productQuery.isLoading) return;
     for (const field in product) {
-      if (field === "id") continue;
+      if (field === 'id') continue;
       if (Object.prototype.hasOwnProperty.call(product, field)) {
         const value = product[field];
         setValue(field as FieldType, value);
@@ -104,7 +104,7 @@ const ProductForm = ({ productId }: Props) => {
     ionRouter.push(`/products/${returnedProductId}/preview`);
   };
 
-  const variations = watch("variations");
+  const variations = watch('variations');
 
   if (categoriesQuery.isLoading || (productId && productQuery.isLoading)) {
     return <PageLoader />;
@@ -116,92 +116,92 @@ const ProductForm = ({ productId }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h3 className="mt-6 mb-1 text-lg text-gray-500">General Information</h3>
+      <h3 className='mt-6 mb-1 text-lg text-gray-500'>GENERAL INFORMATION</h3>
       <IonItem
         className={cx({
-          "ion-invalid": !!errors.name,
-          "ion-valid": !errors.name,
+          'ion-invalid': !!errors.name,
+          'ion-valid': !errors.name,
         })}
       >
         <IonInput
-          label="Name"
-          labelPlacement="floating"
-          {...register("name")}
+          label='Name'
+          labelPlacement='floating'
+          {...register('name')}
           errorText={errors.name?.message}
         />
       </IonItem>
 
       <Typeahead
-        name="category"
+        name='category'
         register={register}
-        title="Categories"
+        title='Categories'
         items={categoryOptions}
-        value={watch("category")}
+        value={watch('category')}
         onSelectionChange={(category) => {
-          setValue("category", category);
+          setValue('category', category);
         }}
         error={errors.category}
       />
       <IonItem
         className={cx({
-          "ion-invalid": !!errors.description,
-          "ion-valid": !errors.description,
+          'ion-invalid': !!errors.description,
+          'ion-valid': !errors.description,
         })}
       >
         <IonTextarea
-          label="Description"
-          labelPlacement="floating"
-          {...register("description")}
+          label='Description'
+          labelPlacement='floating'
+          {...register('description')}
           errorText={errors.description?.message}
           autoGrow
         />
       </IonItem>
       <IonItem
         className={cx({
-          "ion-invalid": !!errors.weight,
-          "ion-valid": !errors.weight,
+          'ion-invalid': !!errors.weight,
+          'ion-valid': !errors.weight,
         })}
       >
         <IonInput
-          type="number"
+          type='number'
           min={1}
-          label="Weight (grams)"
-          labelPlacement="floating"
-          {...register("weight")}
+          label='Weight (grams)'
+          labelPlacement='floating'
+          {...register('weight')}
           errorText={errors.weight?.message}
         />
       </IonItem>
       <IonItem
         className={cx({
-          "ion-invalid": !!errors.price,
-          "ion-valid": !errors.price,
+          'ion-invalid': !!errors.price,
+          'ion-valid': !errors.price,
         })}
       >
         <IonInput
-          type="number"
+          type='number'
           label={`Price ${NAIRA}`}
-          labelPlacement="start"
-          {...register("price")}
+          labelPlacement='start'
+          {...register('price')}
           errorText={errors.price?.message}
         />
       </IonItem>
       <IonItem
         className={cx({
-          "ion-invalid": !!errors.discount,
-          "ion-valid": !errors.discount,
+          'ion-invalid': !!errors.discount,
+          'ion-valid': !errors.discount,
         })}
       >
         <IonInput
-          type="number"
+          type='number'
           min={1}
           max={100}
           label={`Percentage discount %`}
-          labelPlacement="start"
-          {...register("discount")}
+          labelPlacement='start'
+          {...register('discount')}
           errorText={errors.discount?.message}
         />
       </IonItem>
-      <h3 className="mt-6 mb-1 text-lg text-gray-500">Variations</h3>
+      <h3 className='mt-6 mb-1 text-lg text-gray-500'>ATTRIBUTES</h3>
       <DefaultVariations control={control} />
       <CustomVariations
         variations={variations}
@@ -209,7 +209,7 @@ const ProductForm = ({ productId }: Props) => {
         unregister={unregister}
         watch={watch}
       />
-      <h3 className="mt-6 mb-1 text-lg text-gray-500">Stocks</h3>
+      <h3 className='mt-6 mb-1 text-lg text-gray-500'>STOCK</h3>
       <VariationCombinations
         register={register}
         setValue={setValue}
@@ -219,18 +219,18 @@ const ProductForm = ({ productId }: Props) => {
         errors={errors.stocks}
       />
       <IonButton
-        id="checkoutFormButton"
-        className="h-[50px] mt-[30px]"
-        type="submit"
-        expand="block"
+        id='checkoutFormButton'
+        className='h-[50px] mt-[30px]'
+        type='submit'
+        expand='block'
         disabled={uploading}
       >
-        {uploading && <IonSpinner name="dots" className="inline-block mr-3" />}
+        {uploading && <IonSpinner name='dots' className='inline-block mr-3' />}
         {uploadingImages
           ? `Uploading images (${imageUploadProgress}%)`
           : uploading
-          ? "Submitting"
-          : "Submit"}
+          ? 'Submitting'
+          : 'Submit'}
       </IonButton>
     </form>
   );

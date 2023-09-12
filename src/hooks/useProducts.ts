@@ -1,15 +1,15 @@
-import { Filesystem, Directory } from "@capacitor/filesystem";
-import { useIonRouter } from "@ionic/react";
-import { v4 as uuidv4 } from "uuid";
-import { Product } from "../constants/schemas/product";
-import { PhotoFile, base64ToImage } from "./usePhotoGallery";
-import useFirebaseStorage from "./useFirebaseStorage";
-import useFirestoreDocumentMutation from "./useFirestoreDocumentMutation";
-import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
-import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
-import { getProductImages } from "./useProductImages";
-import useCategories from "./useCategories";
-import useFirestoreDocumentDeletion from "./useFirestoreDocumentDeletion";
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { useIonRouter } from '@ionic/react';
+import { v4 as uuidv4 } from 'uuid';
+import { Product } from '../constants/schemas/product';
+import { PhotoFile, base64ToImage } from './usePhotoGallery';
+import useFirebaseStorage from './useFirebaseStorage';
+import useFirestoreDocumentMutation from './useFirestoreDocumentMutation';
+import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
+import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
+import { getProductImages } from './useProductImages';
+import useCategories from './useCategories';
+import useFirestoreDocumentDeletion from './useFirestoreDocumentDeletion';
 
 export interface SortOption {
   field: string;
@@ -21,10 +21,10 @@ interface Props {
   sortBy?: SortOption;
 }
 
-const collectionName = "products";
+const collectionName = 'products';
 
 const useProducts = (props: Props = {}) => {
-  const { productId, sortBy = { field: "name", reverse: false } } = props;
+  const { productId, sortBy = { field: 'name', reverse: false } } = props;
 
   const ionRouter = useIonRouter();
 
@@ -50,11 +50,21 @@ const useProducts = (props: Props = {}) => {
     return record;
   };
 
-  const { firestoreDocumentMutation } = useFirestoreDocumentMutation({
-    collectionName,
-    createAlgoliaRecord: true,
-    generateAlgoliaRecord: generateRecordFromProduct,
-  });
+  const { firestoreDocumentMutation: productMutation } =
+    useFirestoreDocumentMutation({
+      collectionName,
+      createAlgoliaRecord: true,
+      generateAlgoliaRecord: generateRecordFromProduct,
+    });
+
+  const { firestoreDocumentMutation: productFilterIndexMutation } =
+    useFirestoreDocumentMutation({
+      collectionName: 'productFilterIndex',
+    });
+
+  const saveProductFilterIndex = async (product: Product) => {
+    console.log(product);
+  };
 
   const productsQuery = useFirestoreCollectionQuery({
     collectionName,
@@ -109,7 +119,7 @@ const useProducts = (props: Props = {}) => {
       const { images = [] } = stock;
       if (images.length) {
         for (const image of images) {
-          if (typeof image !== "string" && image.filepath) {
+          if (typeof image !== 'string' && image.filepath) {
             unsavedImages.push(image);
           }
         }
@@ -138,15 +148,15 @@ const useProducts = (props: Props = {}) => {
         ...stock,
         images: images
           .map((image: any) => {
-            if (typeof image === "string") return image;
+            if (typeof image === 'string') return image;
             if (image.filepath) {
               if (savedImages[image.filepath]) {
                 return savedImages[image.filepath];
               }
-              throw new Error("Unuploaded image found after image upload!");
+              throw new Error('Unuploaded image found after image upload!');
             }
             throw new Error(
-              "Invalid image found in stocks! Image is neither a string nor has the filepath property."
+              'Invalid image found in stocks! Image is neither a string nor has the filepath property.'
             );
           })
           .filter((v: string) => v),
@@ -174,9 +184,11 @@ const useProducts = (props: Props = {}) => {
         onImageUploadProgress,
       });
 
+    await saveProductFilterIndex(product);
+
     const documentId = productId || uuidv4();
     // save product
-    firestoreDocumentMutation.mutate({
+    productMutation.mutate({
       document: product,
       documentId,
       addTimestamp: true,
@@ -192,13 +204,13 @@ const useProducts = (props: Props = {}) => {
   const { firestoreDocumentDeletion: productBuyersDeletionMutation } =
     useFirestoreDocumentDeletion({
       collectionName: `products/${productId}/buyers`,
-      onSuccess: () => ionRouter.push("/products"),
+      onSuccess: () => ionRouter.push('/products'),
     });
 
   const { firestoreDocumentDeletion: productReviewsDeletionMutation } =
     useFirestoreDocumentDeletion({
       collectionName: `products/${productId}/reviews`,
-      onSuccess: () => ionRouter.push("/products"),
+      onSuccess: () => ionRouter.push('/products'),
     });
 
   const { firestoreDocumentDeletion: productDeletionMutation } =
@@ -207,7 +219,7 @@ const useProducts = (props: Props = {}) => {
       onSuccess: ([productId]: string[]) => {
         productBuyersDeletionMutation.mutate([productId]);
         productReviewsDeletionMutation.mutate([productId]);
-        ionRouter.push("/products");
+        ionRouter.push('/products');
       },
       deleteAlgoliaRecord: true,
     });
@@ -218,7 +230,7 @@ const useProducts = (props: Props = {}) => {
     saveProduct,
     productsQuery,
     productQuery,
-    productMutation: firestoreDocumentMutation,
+    productMutation,
     deleteProduct,
     productDeletionMutation,
   };

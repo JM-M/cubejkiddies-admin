@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useCallback, useRef } from 'react';
 import { useIonRouter } from '@ionic/react';
 import {
   onAuthStateChanged,
@@ -95,17 +95,30 @@ const useAuth = () => {
     await signInWithEmailAndPassword(auth, email, password);
   };
 
+  const onLoginRef = useRef(() => {
+    let destination = '/products';
+    const params: string = ionRouter.routeInfo.search.split('?')[1];
+    const searchParams = new URLSearchParams(params);
+    const returnUrl = searchParams.get('returnUrl');
+    if (returnUrl) destination = returnUrl;
+    ionRouter.push(destination);
+  });
+  const onLogin = onLoginRef.current;
+
+  useEffect(() => {
+    if (
+      !firebaseAuthAdmin ||
+      !admin ||
+      ionRouter.routeInfo.pathname !== '/login'
+    )
+      return;
+    onLoginRef.current();
+  }, [firebaseAuthAdmin, admin]);
+
   const loginMutation = useMutation({
     mutationKey: ['admin-sign-in'],
     mutationFn: loginFn,
-    onSuccess: () => {
-      let destination = '/products';
-      const params: string = ionRouter.routeInfo.search.split('?')[1];
-      const searchParams = new URLSearchParams(params);
-      const returnUrl = searchParams.get('returnUrl');
-      if (returnUrl) destination = returnUrl;
-      ionRouter.push(destination);
-    },
+    onSuccess: onLogin,
   });
 
   const onLogOut = () => {
