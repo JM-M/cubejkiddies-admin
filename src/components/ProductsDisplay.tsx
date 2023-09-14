@@ -1,19 +1,19 @@
-import { useState } from "react";
-import { listOutline, gridOutline } from "ionicons/icons";
-import DisplayController from "./DisplayController";
-import QueryController from "./QueryController";
-import ProductTable from "./ProductTable";
-import ProductGrid from "./ProductGrid";
-import Searchbar from "./Searchbar";
-import ProductSearchHit from "./ProductSearchHit";
-import useProducts, { SortOption } from "../hooks/useProducts";
-import { Product } from "../constants/schemas/product";
+import { useState } from 'react';
+import { listOutline, gridOutline } from 'ionicons/icons';
+import DisplayController from './DisplayController';
+import QueryController from './QueryController';
+import ProductTable from './ProductTable';
+import ProductGrid from './ProductGrid';
+import Searchbar from './Searchbar';
+import ProductSearchHit from './ProductSearchHit';
+import useProducts, { SortOption } from '../hooks/useProducts';
+import { Product } from '../constants/schemas/product';
 
 const SORT_OPTIONS: { [option: string]: SortOption } = {
-  "A - Z": { field: "name", reverse: false },
-  "Z - A": { field: "name", reverse: true },
-  Newest: { field: "createdAt", reverse: false },
-  Oldest: { field: "createdAt", reverse: true },
+  'A - Z': { field: 'name', reverse: false },
+  'Z - A': { field: 'name', reverse: true },
+  Newest: { field: 'createdAt', reverse: false },
+  Oldest: { field: 'createdAt', reverse: true },
 };
 
 interface Props {
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
-  const [display, setDisplay] = useState<"list" | "grid">("list");
+  const [display, setDisplay] = useState<'list' | 'grid'>('list');
   const [sortOption, setSortOption] = useState<string>();
 
   const displayOptions = {
@@ -36,22 +36,21 @@ const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
 
   const {
     productsQuery: {
-      data = [],
+      data = {},
       isLoading,
       fetchNextPage,
       fetchPreviousPage,
-      hasNextPage,
       page,
-      totalPages,
     },
   } = useProducts({ sortBy });
+  const { hasNextPage = false, totalPages = 1 } = data;
 
   let products;
   switch (display) {
-    case "grid":
+    case 'grid':
       products = (
         <ProductGrid
-          products={data}
+          products={data?.docs || []}
           initialLoading={isLoading && page === 1}
           onLoadMore={fetchNextPage}
           loadingMore={isLoading && page > 1}
@@ -65,7 +64,7 @@ const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
     default:
       products = (
         <ProductTable
-          products={data}
+          products={data?.docs || []}
           onPageNext={fetchNextPage}
           onPagePrev={fetchPreviousPage}
           totalPages={totalPages}
@@ -78,14 +77,14 @@ const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
   }
   return (
     <>
-      <div className="rounded-lg overflow-visible">
+      <div className='rounded-lg overflow-visible'>
         <Searchbar
-          indexName="products"
+          indexName='products'
           hitComponent={ProductSearchHit}
-          placeholder="Search products"
+          placeholder='Search products'
         />
       </div>
-      <div className="flex justify-between my-5">
+      <div className='flex justify-between my-5'>
         <DisplayController
           options={displayOptions}
           display={display}

@@ -21,6 +21,7 @@ import { NAIRA } from '../constants/unicode';
 import productSchema, { Product } from '../constants/schemas/product';
 import useProducts from '../hooks/useProducts';
 import useCategories, { Category } from '../hooks/useCategories';
+import { createRandomProduct } from '../devUtils/fakeData';
 
 type FieldType =
   | 'name'
@@ -58,15 +59,20 @@ const ProductForm = ({ productId }: Props) => {
     resolver: yupResolver(productSchema),
   });
 
-  const { saveProduct, productQuery, productMutation } = useProducts({
+  const {
+    saveProduct,
+    productQuery,
+    productMutation,
+    generateRecordFromProduct,
+  } = useProducts({
     productId,
   });
   const product = productQuery.data;
 
   const { categoriesQuery } = useCategories();
   const categoryOptions = useMemo(() => {
-    if (!categoriesQuery.data?.length) return [];
-    return categoriesQuery.data
+    if (!categoriesQuery.data?.docs?.length) return [];
+    return categoriesQuery.data?.docs
       .map((c: Category) => ({
         text: c.value,
         value: c.value,
@@ -74,7 +80,7 @@ const ProductForm = ({ productId }: Props) => {
       .sort((a: { text: string }, b: { text: string }) =>
         a.text === b.text ? 0 : a.text > b.text ? 1 : -1
       );
-  }, [categoriesQuery.data, categoriesQuery.isFetching]);
+  }, [categoriesQuery.data?.docs, categoriesQuery.isFetching]);
 
   useEffect(() => {
     if (!product || productQuery.isLoading) return;
@@ -88,6 +94,18 @@ const ProductForm = ({ productId }: Props) => {
   }, [product, productQuery.isLoading, setValue]);
 
   const onSubmit = async (product: Product) => {
+    // const fakeProduct = createRandomProduct();
+    // // console.log('Product:\n', fakeProduct);
+    // // console.log('Algolia record:\n', generateRecordFromProduct(fakeProduct));
+    // await saveProduct({
+    //   product: fakeProduct,
+    //   productId: fakeProduct.id,
+    //   onImageUploadProgress: ({ index, progress, total }) => {
+    //     const bin = 100 / total;
+    //     setImageUploadProgress(Math.round(bin * (index + progress / 100)));
+    //   },
+    // });
+    // return;
     setUploadingImages(true);
     // upload data
     const returnedProductId = await saveProduct({

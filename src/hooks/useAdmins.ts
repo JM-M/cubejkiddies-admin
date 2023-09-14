@@ -41,19 +41,19 @@ const useAdmins = (props: Props = {}) => {
     collectionName,
     options: { pageSize: 1000 },
   });
-  const admins = adminsQuery.data;
+  const admins = adminsQuery.data?.docs;
 
   const adminQuery = useFirestoreDocumentQuery({
     collectionName,
     documentId: uid,
   });
 
-  const { firestoreDocumentMutation: adminDocMutation } =
-    useFirestoreDocumentMutation({
-      collectionName,
-      invalidateCollectionQuery: true,
-      invalidateDocumentQuery: true,
-    });
+  // const { firestoreDocumentMutation: adminDocMutation } =
+  //   useFirestoreDocumentMutation({
+  //     collectionName,
+  //     invalidateCollectionQuery: true,
+  //     invalidateDocumentQuery: true,
+  //   });
 
   const createAdminFn = async (adminData: AdminSignUp) => {
     const { data } = await axios.post(

@@ -1,5 +1,5 @@
-import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
-import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
+import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
+import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
 
 export type User = {
   email: string;
@@ -18,17 +18,17 @@ interface Props {
   sortBy?: SortOption;
 }
 
-const collectionName = "users";
+const collectionName = 'users';
 
 const useUsers = (props: Props = {}) => {
-  const { uid = "", sortBy = { field: "firstName", reverse: false } } = props;
+  const { uid = '', sortBy = { field: 'firstName', reverse: false } } = props;
   const usersQuery = useFirestoreCollectionQuery({
     collectionName,
     orderByField: sortBy.field,
     reverseOrder: sortBy.reverse,
     options: { pageSize: 10 },
   });
-  const users = usersQuery.data;
+  const users = usersQuery.data?.docs;
 
   const userQuery = useFirestoreDocumentQuery({
     collectionName,

@@ -119,7 +119,7 @@ const CategoryEditor = ({
         />
       )}
       {!isRootCategory && header}
-      {isRootCategory && !categoriesQuery.data?.length && (
+      {isRootCategory && !categoriesQuery.data?.docs?.length && (
         <div className='text-gray-500'>No categories added</div>
       )}
       <Expandable

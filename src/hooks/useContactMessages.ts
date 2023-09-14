@@ -1,6 +1,6 @@
-import { Timestamp } from "firebase/firestore";
-import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
-import { User } from "./useUsers";
+import { Timestamp } from 'firebase/firestore';
+import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
+import { User } from './useUsers';
 
 export interface ContactMessage {
   id: string;
@@ -9,14 +9,14 @@ export interface ContactMessage {
   createdAt?: Timestamp;
 }
 
-const collectionName = "contactMessages";
+const collectionName = 'contactMessages';
 const useContactMessages = () => {
   const contactMessagesQuery = useFirestoreCollectionQuery({
     collectionName,
-    orderByField: "createdAt",
+    orderByField: 'createdAt',
     options: { pageSize: 10 },
   });
-  const contactMessages: ContactMessage[] = contactMessagesQuery.data;
+  const contactMessages: ContactMessage[] = contactMessagesQuery.data?.docs;
   return { contactMessagesQuery, contactMessages };
 };
 

@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { IonIcon, IonImg } from "@ionic/react";
-import { checkmarkCircle, ellipseOutline } from "ionicons/icons";
-import cx from "classnames";
-import { NAIRA } from "../constants/unicode";
-import { Product } from "../constants/schemas/product";
-import useCategories from "../hooks/useCategories";
+import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { IonIcon, IonImg } from '@ionic/react';
+import { checkmarkCircle, ellipseOutline } from 'ionicons/icons';
+import cx from 'classnames';
+import { NAIRA } from '../constants/unicode';
+import { Product } from '../constants/schemas/product';
+import useCategories from '../hooks/useCategories';
 
 interface Props {
   product: Product;
@@ -48,9 +48,9 @@ const ProductCard = ({
 
   const checkbox = selectable && (
     <IonIcon
-      color="primary"
+      color='primary'
       icon={selected ? checkmarkCircle : ellipseOutline}
-      className="absolute right-1 top-1 h-[24px] w-[24px]"
+      className='absolute right-1 top-1 h-[24px] w-[24px]'
     />
   );
 
@@ -59,37 +59,37 @@ const ProductCard = ({
 
   return (
     <div
-      className={cx("relative rounded-xl overflow-hidden", {
-        "border-2 border-transparent": selectable,
-        "border-[var(--ion-color-primary-tint)]": selectable && selected,
+      className={cx('relative rounded-xl overflow-hidden', {
+        'border-2 border-transparent': selectable,
+        'border-[var(--ion-color-primary-tint)]': selectable && selected,
       })}
       onClick={clickHandler}
     >
       {checkbox}
       <Link
         to={`/products/${id}/preview`}
-        className={cx("block", { "pointer-events-none": selectable })}
+        className={cx('block', { 'pointer-events-none': selectable })}
       >
-        <div className="flex justify-center items-center w-full aspect-[5/6] mb-[10px] bg-gray-100 rounded-lg overflow-hidden">
+        <div className='flex justify-center items-center w-full aspect-[5/6] mb-[10px] bg-gray-100 rounded-lg overflow-hidden'>
           {image ? (
             <IonImg
               src={image as string}
               alt={name}
-              className="h-full w-full bg-gray-200 object-cover"
+              className='h-full w-full bg-gray-200 object-cover'
             />
           ) : (
-            <span className="text-gray-500">No image added</span>
+            <span className='text-gray-500'>No image added</span>
           )}
         </div>
       </Link>
-      <div className={cx("flex justify-between", { "p-1": selectable })}>
-        <div className="flex flex-col">
-          <span className="block font-medium">{name}</span>
-          <span className="text-xs text-gray-500">
+      <div className={cx('flex justify-between', { 'p-1': selectable })}>
+        <div className='flex flex-col'>
+          <span className='block font-medium'>{name}</span>
+          <span className='text-xs text-gray-500'>
             {getCategoryNameFromValue(category)}
           </span>
         </div>
-        <span className="text-base">
+        <span className='text-base'>
           {NAIRA} {price}
         </span>
       </div>

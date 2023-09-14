@@ -52,8 +52,8 @@ const ProductSectionCategorySelector: React.FC<Props> = ({ sectionId }) => {
 
   const { categoriesQuery } = useCategories();
   const categoryOptions = useMemo(() => {
-    if (!categoriesQuery.data?.length) return [];
-    return categoriesQuery.data
+    if (!categoriesQuery.data?.docs?.length) return [];
+    return categoriesQuery.data?.docs
       .map((c: Category) => ({
         text: c.value,
         value: c.value,
@@ -61,7 +61,7 @@ const ProductSectionCategorySelector: React.FC<Props> = ({ sectionId }) => {
       .sort((a: { text: string }, b: { text: string }) =>
         a.text === b.text ? 0 : a.text > b.text ? 1 : -1
       );
-  }, [categoriesQuery.data, categoriesQuery.isFetching]);
+  }, [categoriesQuery.data?.docs, categoriesQuery.isFetching]);
 
   const submit = (values: ProductSection) => {
     if (sectionId) return saveProductSection({ ...values, id: sectionId });

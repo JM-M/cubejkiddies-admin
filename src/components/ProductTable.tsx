@@ -1,18 +1,18 @@
-import { useState, useRef, useMemo } from "react";
-import { IonSpinner, useIonRouter } from "@ionic/react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { IonIcon } from "@ionic/react";
+import { useState, useRef, useMemo } from 'react';
+import { IonSpinner, useIonRouter } from '@ionic/react';
+import { createColumnHelper } from '@tanstack/react-table';
+import { IonIcon } from '@ionic/react';
 import {
   removeCircleOutline,
   checkmarkCircle,
   ellipseOutline,
-} from "ionicons/icons";
+} from 'ionicons/icons';
 
-import Table from "./Table";
-import TableController from "./TableController";
-import PageLoader from "./PageLoader";
-import { Product } from "../constants/schemas/product";
-import { NAIRA } from "../constants/unicode";
+import Table from './Table';
+import TableController from './TableController';
+import PageLoader from './PageLoader';
+import { Product } from '../constants/schemas/product';
+import { NAIRA } from '../constants/unicode';
 
 interface Props {
   selectable?: boolean;
@@ -49,31 +49,31 @@ const ProductTable = ({
 
   const columns = useMemo(() => {
     const columns = [
-      columnHelper.accessor("name", {
-        header: "Name",
-        cell: (name) => <span className="font-medium">{name.getValue()}</span>,
+      columnHelper.accessor('name', {
+        header: 'Name',
+        cell: (name) => <span className='font-medium'>{name.getValue()}</span>,
       }),
-      columnHelper.accessor("price", {
-        header: () => <span className="whitespace-nowrap">Price</span>,
+      columnHelper.accessor('price', {
+        header: () => <span className='whitespace-nowrap'>Price</span>,
         cell: (price) => (
-          <span className="whitespace-nowrap">
+          <span className='whitespace-nowrap'>
             {NAIRA} {price.getValue()}
           </span>
         ),
       }),
-      columnHelper.accessor("stocks", {
-        header: () => "Total stock",
+      columnHelper.accessor('stocks', {
+        header: () => 'Total stock',
         cell: (stocks) =>
           stocks.getValue().reduce((total, stock) => total + stock.quantity, 0),
       }),
     ];
     if (selectable)
       columns.unshift({
-        id: "select",
+        id: 'select',
         header: ({ table }: any) => {
           return (
             <IonIcon
-              color="primary"
+              color='primary'
               icon={removeCircleOutline}
               onClick={() => {
                 if (!products?.length) return;
@@ -82,7 +82,7 @@ const ProductTable = ({
                   return products;
                 });
               }}
-              className="h-[24px] w-[24px]"
+              className='h-[24px] w-[24px]'
             />
           );
         },
@@ -92,9 +92,9 @@ const ProductTable = ({
             .includes(row.original.id);
           return (
             <IonIcon
-              color="primary"
+              color='primary'
               icon={selected ? checkmarkCircle : ellipseOutline}
-              className="h-[24px] w-[24px]"
+              className='h-[24px] w-[24px]'
             />
           );
         },
@@ -108,7 +108,7 @@ const ProductTable = ({
   };
 
   const handleSelection = (product: Product) => {
-    if (typeof onSelectionChangeRef.current !== "function") return;
+    if (typeof onSelectionChangeRef.current !== 'function') return;
 
     const productId = product.id;
     const selectedProductIds = selectedProducts.map((p: Product) => p.id);
@@ -142,21 +142,21 @@ const ProductTable = ({
 
   if (loading) return <PageLoader />;
 
-  if (!Array.isArray(products)) return <>Page is not an array</>;
+  if (!Array.isArray(products)) return <>No products data found</>;
 
-  if (!products?.length) return <>Page is an empty array</>;
+  if (!products?.length) return <>No product found</>;
 
   return (
     <>
-      <div className="flex flex-col min-h-[300px]">
+      <div className='flex flex-col min-h-[300px]'>
         {products ? (
           <Table data={products} columns={columns} onRowClick={onRowClick} />
         ) : (
-          <span className="m-auto">
+          <span className='m-auto'>
             {loading ? (
-              <span className="text-gray-500">Page not found</span>
+              <span className='text-gray-500'>Page not found</span>
             ) : (
-              <IonSpinner name="circular" />
+              <IonSpinner name='circular' />
             )}
           </span>
         )}

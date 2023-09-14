@@ -32,19 +32,45 @@ const useProducts = (props: Props = {}) => {
 
   const { getCategoryNameFromValue } = useCategories();
 
+  const formatRecordText = (text: string) =>
+    text.replaceAll(' ', '_').toLowerCase();
+
   const generateRecordFromProduct = (product: Product) => {
     // transform product into an algolia product record
     const { id, name, category, price, discount, variations, description } =
       product;
     const images = getProductImages(product) || [];
+
+    // extract only the name of each variation [{name: <variation name>}, ...] -> [<variation_name>, ...]
+    const recordVariations = Object.keys(variations).reduce(
+      (prevValue, key: string) => ({
+        ...prevValue,
+        [key]: (variations as any)[key].map(({ name }: { name: string }) =>
+          formatRecordText(name)
+        ),
+      }),
+      {}
+    );
+
+    const stocks = product.stocks.map((stock) =>
+      Object.entries(stock.variationCombination)
+        .map((entry) => {
+          return `${formatRecordText(entry[0])}-${formatRecordText(
+            entry[1] as string
+          )}`;
+        })
+        .join('+')
+    );
+
     const record: any = {
       name,
       description,
       category: getCategoryNameFromValue(category),
       price,
       discount,
-      variations,
+      variations: recordVariations,
       objectID: id,
+      stocks,
     };
     if (images?.length) record.image = images[0];
     return record;
@@ -56,15 +82,6 @@ const useProducts = (props: Props = {}) => {
       createAlgoliaRecord: true,
       generateAlgoliaRecord: generateRecordFromProduct,
     });
-
-  const { firestoreDocumentMutation: productFilterIndexMutation } =
-    useFirestoreDocumentMutation({
-      collectionName: 'productFilterIndex',
-    });
-
-  const saveProductFilterIndex = async (product: Product) => {
-    console.log(product);
-  };
 
   const productsQuery = useFirestoreCollectionQuery({
     collectionName,
@@ -184,8 +201,6 @@ const useProducts = (props: Props = {}) => {
         onImageUploadProgress,
       });
 
-    await saveProductFilterIndex(product);
-
     const documentId = productId || uuidv4();
     // save product
     productMutation.mutate({
@@ -233,6 +248,7 @@ const useProducts = (props: Props = {}) => {
     productMutation,
     deleteProduct,
     productDeletionMutation,
+    generateRecordFromProduct,
   };
 };
 

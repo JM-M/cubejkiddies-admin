@@ -1,15 +1,15 @@
-import { useMemo } from "react";
-import { Filesystem, Directory } from "@capacitor/filesystem";
-import { useIonRouter } from "@ionic/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { v4 as uuidv4 } from "uuid";
-import useFirestoreDocumentQuery from "./useFirestoreDocumentQuery";
-import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
-import useFirestoreDocumentMutation from "./useFirestoreDocumentMutation";
-import useFirestoreDocumentDeletion from "./useFirestoreDocumentDeletion";
-import useProducts from "./useProducts";
-import useFirebaseStorage from "./useFirebaseStorage";
-import { PhotoFile, base64ToImage } from "./usePhotoGallery";
+import { useMemo } from 'react';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { useIonRouter } from '@ionic/react';
+import { useQueryClient } from '@tanstack/react-query';
+import { v4 as uuidv4 } from 'uuid';
+import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
+import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
+import useFirestoreDocumentMutation from './useFirestoreDocumentMutation';
+import useFirestoreDocumentDeletion from './useFirestoreDocumentDeletion';
+import useProducts from './useProducts';
+import useFirebaseStorage from './useFirebaseStorage';
+import { PhotoFile, base64ToImage } from './usePhotoGallery';
 
 export interface HomeSlide {
   id?: string;
@@ -23,8 +23,8 @@ interface Props {
   homeSlideId: string;
 }
 
-const collectionName = "homeSlides";
-const useHomeSlides = (props: Props = { homeSlideId: "" }) => {
+const collectionName = 'homeSlides';
+const useHomeSlides = (props: Props = { homeSlideId: '' }) => {
   const { homeSlideId } = props;
   const router = useIonRouter();
 
@@ -35,15 +35,15 @@ const useHomeSlides = (props: Props = { homeSlideId: "" }) => {
     documentId: homeSlideId,
   });
   const { data: homeSlide } = homeSlideQuery;
-  const { buttonHref = "" } = homeSlide || {};
+  const { buttonHref = '' } = homeSlide || {};
 
-  const buttonHrefSegments = buttonHref.split("/");
+  const buttonHrefSegments = buttonHref.split('/');
   let buttonLinkType = buttonHrefSegments[1];
 
-  let productId = "";
-  if (buttonLinkType === "products") {
+  let productId = '';
+  if (buttonLinkType === 'products') {
     productId = buttonHrefSegments[2];
-    buttonLinkType = "product";
+    buttonLinkType = 'product';
   }
   const { productQuery } = useProducts({ productId });
   const product = productQuery.data;
@@ -59,11 +59,11 @@ const useHomeSlides = (props: Props = { homeSlideId: "" }) => {
     if (button) {
       slide.buttonText = buttonText;
       slide.buttonLinkType = buttonLinkType;
-      if (buttonLinkType === "product") {
+      if (buttonLinkType === 'product') {
         if (!product) return null;
         slide.product = product;
-      } else if (buttonLinkType === "category") {
-        slide.category = "/" + buttonHrefSegments.slice(2).join("/");
+      } else if (buttonLinkType === 'category') {
+        slide.category = '/' + buttonHrefSegments.slice(2).join('/');
       }
     }
     return slide;
@@ -75,12 +75,12 @@ const useHomeSlides = (props: Props = { homeSlideId: "" }) => {
       pageSize: 1000,
     },
   });
-  const homeSlides = homeSlidesQuery.data;
+  const homeSlides = homeSlidesQuery.data?.docs;
 
   const { firestoreDocumentMutation: addHomeSlideMutation } =
     useFirestoreDocumentMutation({
       collectionName,
-      onSuccess: () => router.push("/home-slider"),
+      onSuccess: () => router.push('/home-slider'),
     });
 
   const { uploadToFirebaseStorage } = useFirebaseStorage();
@@ -97,7 +97,7 @@ const useHomeSlides = (props: Props = { homeSlideId: "" }) => {
       path: image.filepath,
       directory: Directory.Data,
     });
-    const blob = base64ToImage(file.data);
+    const blob = base64ToImage(file.data as string);
     const url = await uploadToFirebaseStorage({
       data: blob,
       path: `images/products/${uuidv4()}`,
@@ -114,7 +114,7 @@ const useHomeSlides = (props: Props = { homeSlideId: "" }) => {
     onImageUploadProgress: (progress: number) => any;
   }) => {
     let image = slide.image as string | PhotoFile;
-    if (typeof image !== "string" && image.filepath) {
+    if (typeof image !== 'string' && image.filepath) {
       const url = await saveImage({
         image,
         onUploadProgress: (progress) => onImageUploadProgress(progress),
@@ -129,7 +129,7 @@ const useHomeSlides = (props: Props = { homeSlideId: "" }) => {
 
   const onDeleteSlideSuccess = (documentIds: string[]) => {
     queryClient.setQueriesData(
-      ["collection", collectionName],
+      ['collection', collectionName],
       (slides: any) => {
         if (Array.isArray(slides) && slides.length) {
           return slides.filter((slide) => !documentIds.includes(slide?.id));
