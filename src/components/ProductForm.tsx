@@ -57,6 +57,7 @@ const ProductForm = ({ productId }: Props) => {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(productSchema),
+    defaultValues: { discount: 0 },
   });
 
   const {
@@ -94,18 +95,16 @@ const ProductForm = ({ productId }: Props) => {
   }, [product, productQuery.isLoading, setValue]);
 
   const onSubmit = async (product: Product) => {
-    // const fakeProduct = createRandomProduct();
-    // // console.log('Product:\n', fakeProduct);
-    // // console.log('Algolia record:\n', generateRecordFromProduct(fakeProduct));
-    // await saveProduct({
-    //   product: fakeProduct,
-    //   productId: fakeProduct.id,
-    //   onImageUploadProgress: ({ index, progress, total }) => {
-    //     const bin = 100 / total;
-    //     setImageUploadProgress(Math.round(bin * (index + progress / 100)));
-    //   },
-    // });
-    // return;
+    const fakeProduct = createRandomProduct();
+    await saveProduct({
+      product: fakeProduct,
+      productId: fakeProduct.id,
+      onImageUploadProgress: ({ index, progress, total }) => {
+        const bin = 100 / total;
+        setImageUploadProgress(Math.round(bin * (index + progress / 100)));
+      },
+    });
+    return;
     setUploadingImages(true);
     // upload data
     const returnedProductId = await saveProduct({
@@ -211,7 +210,7 @@ const ProductForm = ({ productId }: Props) => {
       >
         <IonInput
           type='number'
-          min={1}
+          min={0}
           max={100}
           label={`Percentage discount %`}
           labelPlacement='start'

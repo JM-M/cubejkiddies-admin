@@ -25,6 +25,7 @@ import productSectionSchema, {
 import { Product } from '../constants/schemas/product';
 import useProductSections from '../hooks/useProductSections';
 import useProductSection from '../hooks/useProductSection';
+import { isEqual } from 'lodash';
 
 interface Props {
   sectionId?: string;
@@ -51,6 +52,7 @@ const ProductSectionForm = ({ sectionId }: Props) => {
   const {
     saveProductSection,
     productSectionMutation,
+    sectionProductMutation,
     productSectionQuery,
     deleteProductSection,
     productSectionDeletionMutation,
@@ -69,8 +71,9 @@ const ProductSectionForm = ({ sectionId }: Props) => {
   const { productsQuery } = useProductSection(productSection);
 
   useEffect(() => {
-    const { data: products } = productsQuery;
-    // console.log(productsQuery);
+    const { data } = productsQuery;
+    const products = data?.docs || [];
+    if (isEqual(products, watch('products'))) return;
     if (
       !productSection ||
       touched ||
@@ -79,7 +82,7 @@ const ProductSectionForm = ({ sectionId }: Props) => {
     )
       return;
     setValue('products', products);
-  }, [productsQuery]);
+  }, [productsQuery, watch]);
 
   const onSubmit = (values: ProductSection) => {
     if (sectionId) return saveProductSection({ ...values, id: sectionId });
@@ -98,8 +101,9 @@ const ProductSectionForm = ({ sectionId }: Props) => {
     }
   };
 
-  const submitting = productSectionMutation.isLoading;
-  
+  const submitting =
+    productSectionMutation.isLoading || sectionProductMutation.isLoading;
+
   const loading = productSectionQuery.isLoading || productsQuery.isLoading;
   if (loading) return <PageLoader />;
 
@@ -136,22 +140,15 @@ const ProductSectionForm = ({ sectionId }: Props) => {
             );
           }}
         />
-        <IonButton
+        <Button
           id='checkoutFormButton'
           className='h-10 mt-[30px]'
           type='submit'
           expand='block'
-          disabled={submitting}
+          loading={submitting}
         >
-          {submitting ? (
-            <>
-              <IonSpinner name='dots' className='inline-block mr-3' />{' '}
-              Submitting
-            </>
-          ) : (
-            'Submit'
-          )}
-        </IonButton>
+          {submitting ? 'Submitting' : 'Submit'}
+        </Button>
       </form>
       <div>
         <DeleteModal

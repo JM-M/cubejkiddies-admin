@@ -7,7 +7,7 @@ const DefaultProductVariations: React.FC<{
 }> = ({ colors, sizes, setProductVariant = () => null }) => {
   return (
     <div className='flex'>
-      {!!colors.length && (
+      {!!colors?.length && (
         <div className='flex-1 max-w-[50%]'>
           <IonItem>
             <IonSelect
@@ -20,7 +20,7 @@ const DefaultProductVariations: React.FC<{
               {colors.map((color: any, i: number) => {
                 const { name, hex } = color;
                 return (
-                  <IonSelectOption key={name} value={name}>
+                  <IonSelectOption key={i} value={name}>
                     <IonItem>
                       <span
                         className='inline-block h-5 w-5 mr-3 rounded-xl'
@@ -35,7 +35,7 @@ const DefaultProductVariations: React.FC<{
           </IonItem>
         </div>
       )}
-      {!!sizes.length && (
+      {!!sizes?.length && (
         <div className='flex-1 max-w-[50%]'>
           <IonItem>
             <IonSelect
@@ -48,7 +48,7 @@ const DefaultProductVariations: React.FC<{
               {sizes.map((size: any, i: number) => {
                 const { name } = size;
                 return (
-                  <IonSelectOption key={name} value={name}>
+                  <IonSelectOption key={i} value={name}>
                     {name}
                   </IonSelectOption>
                 );

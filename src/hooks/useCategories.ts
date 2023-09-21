@@ -81,7 +81,7 @@ const useCategories = (props: Props | undefined = {}) => {
       .toLowerCase()}`;
 
   const getCategoryNameFromValue = (value: string) =>
-    categoriesQuery.data?.find((c: Category) => c.value === value)?.name;
+    categoriesQuery.data?.docs?.find((c: Category) => c.value === value)?.name;
 
   return {
     categoriesQuery,

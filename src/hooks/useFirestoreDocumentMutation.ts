@@ -1,28 +1,43 @@
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
-import { db } from "../../firebase";
-import useAlgolia from "./useAlgolia";
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import { db } from '../../firebase';
+import useAlgolia from './useAlgolia';
+
+interface Props {
+  collectionName: string;
+  onSuccess?: Function;
+  invalidateCollectionQuery?: boolean;
+  invalidateDocumentQuery?: boolean;
+  generateAlgoliaRecord?: ((record: any) => any) | boolean;
+  generateAlgoliaIndexSettings?:
+    | ((arg: { existingSettings: any; record: any }) => any)
+    | undefined;
+}
 
 const useFirestoreDocumentMutation = ({
   collectionName,
   onSuccess = () => null,
   invalidateCollectionQuery = true,
   invalidateDocumentQuery = true,
-  createAlgoliaRecord,
   generateAlgoliaRecord,
-}: {
-  collectionName: string;
-  onSuccess?: Function;
-  invalidateCollectionQuery?: boolean;
-  invalidateDocumentQuery?: boolean;
-  createAlgoliaRecord?: boolean;
-  generateAlgoliaRecord?: (record: any) => any;
-}) => {
+  generateAlgoliaIndexSettings,
+}: Props) => {
   const queryClient = useQueryClient();
 
-  const { saveRecordMutation } = useAlgolia({
-    index: collectionName,
-  });
+  const { saveRecordMutation, getSettingsMutation, setSettingsMutation } =
+    useAlgolia({
+      index: collectionName,
+    });
+
+  const updateAlgoliaIndexSettings = async (record: any) => {
+    if (!generateAlgoliaIndexSettings) return;
+    const existingSettings = await getSettingsMutation.mutateAsync();
+    const settings = generateAlgoliaIndexSettings({
+      existingSettings,
+      record,
+    });
+    await setSettingsMutation.mutateAsync(settings);
+  };
 
   const uploadToFirestore = async ({
     document,
@@ -42,27 +57,32 @@ const useFirestoreDocumentMutation = ({
       data = { ...document, id: documentId, updatedAt: now };
     }
     await setDoc(docRef, data);
-    if (createAlgoliaRecord) {
-      let record = data;
-      if (typeof generateAlgoliaRecord === "function") {
+
+    if (generateAlgoliaRecord) {
+      let record = { ...data, objectID: data.id };
+      if (typeof generateAlgoliaRecord === 'function') {
         record = generateAlgoliaRecord(data);
       }
       await saveRecordMutation.mutateAsync(record);
+
+      if (generateAlgoliaIndexSettings) {
+        updateAlgoliaIndexSettings(record);
+      }
     }
     return { data, documentId };
   };
 
   const firestoreDocumentMutation = useMutation({
-    mutationKey: ["upload-to-collection", collectionName],
+    mutationKey: ['upload-to-collection', collectionName],
     mutationFn: uploadToFirestore,
     onSuccess: ({ data, documentId }) => {
       onSuccess(data);
       if (invalidateCollectionQuery) {
-        queryClient.invalidateQueries(["collection", collectionName]);
+        queryClient.invalidateQueries(['collection', collectionName]);
       }
       if (invalidateDocumentQuery) {
         queryClient.invalidateQueries([
-          "document",
+          'document',
           { collectionName, documentId },
         ]);
       }

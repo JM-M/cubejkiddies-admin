@@ -15,11 +15,16 @@ interface Props
 const EditProductSection: React.FC<Props> = ({ match }) => {
   const { sectionId } = match.params;
   const { productSectionsQuery } = useProductSections();
-  if (productSectionsQuery.isLoading) return <PageLoader />;
-  const sections = productSectionsQuery?.data;
+  const { isLoading, data } = productSectionsQuery;
+
+  if (isLoading) return <PageLoader />;
+
+  const sections = data?.docs;
+
   const section = sections.find(
     (s: DatabaseProductSection) => s.id === sectionId
   );
+
   if (!section)
     return (
       <div className='h-fit w-fit m-auto text-gray-500'>
@@ -28,6 +33,7 @@ const EditProductSection: React.FC<Props> = ({ match }) => {
     );
 
   let display = <PageLoader />;
+
   if (section.category) {
     display = <ProductSectionCategorySelector sectionId={sectionId} />;
   } else {

@@ -61,7 +61,7 @@ const ProductCard = ({
     <div
       className={cx('relative rounded-xl overflow-hidden', {
         'border-2 border-transparent': selectable,
-        'border-[var(--ion-color-primary-tint)]': selectable && selected,
+        'border-[var(--ion-color-primary)]': selectable && selected,
       })}
       onClick={clickHandler}
     >

@@ -1,4 +1,4 @@
-import { object, string, number, array, mixed, InferType } from "yup";
+import { object, string, number, array, mixed, InferType } from 'yup';
 
 const productSchema = object({
   id: string(),
@@ -7,7 +7,7 @@ const productSchema = object({
   description: string().required(),
   weight: number().required(),
   price: number().required(),
-  discount: number().required().min(1).max(100),
+  discount: number().min(0).max(100),
   variations: object(),
   stocks: array()
     .of(
@@ -18,6 +18,7 @@ const productSchema = object({
       })
     )
     .required(),
+  createdAt: mixed(),
 });
 
 export type Product = InferType<typeof productSchema>;

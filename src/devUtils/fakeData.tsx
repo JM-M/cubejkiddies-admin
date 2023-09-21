@@ -99,7 +99,7 @@ export const createRandomProduct = () => {
     const stock: any = stocks[i];
     stock.quantity = faker.number.int(50);
     stock.images = faker.helpers.uniqueArray(
-      () => faker.image.urlLoremFlickr({ category: 'fashion' }),
+      () => faker.image.urlLoremFlickr({ category: 'nature' }),
       faker.number.int(5)
     );
   }

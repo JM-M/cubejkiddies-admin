@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import algoliasearch from "algoliasearch";
-import { useMutation } from "@tanstack/react-query";
+import { useMemo } from 'react';
+import algoliasearch from 'algoliasearch';
+import { useMutation } from '@tanstack/react-query';
 
 const client = algoliasearch(
   import.meta.env.VITE_ALGOLIA_APPLICATION_ID,
@@ -14,8 +14,33 @@ interface Props {
 }
 
 const useAlgolia = (props: Props) => {
-  const index = useMemo(() => client.initIndex(props.index), [props.index]);
-  const noIndex = !props.index;
+  const indexName = encodeURIComponent(props.index);
+  const index = useMemo(() => client.initIndex(indexName), [indexName]);
+  const noIndex = !indexName;
+
+  const getSettingsFn = async () => {
+    const settings = await index.getSettings();
+    return settings;
+  };
+
+  const getSettingsMutation = useMutation({
+    mutationKey: ['algolia-get-record-settings'],
+    mutationFn: getSettingsFn,
+  });
+
+  const getRecordSetting = getSettingsMutation.mutate;
+
+  const setSettingsFn = async (settings: any) => {
+    if (!settings) return;
+    await index.setSettings(settings);
+  };
+
+  const setSettingsMutation = useMutation({
+    mutationKey: ['algolia-set-record-settings'],
+    mutationFn: setSettingsFn,
+  });
+
+  const setRecordSetting = setSettingsMutation.mutate;
 
   const saveRecordFn = async (record: AlgoliaRecord) => {
     if (noIndex) return;
@@ -23,7 +48,7 @@ const useAlgolia = (props: Props) => {
   };
 
   const saveRecordMutation = useMutation({
-    mutationKey: ["algolia-save-record"],
+    mutationKey: ['algolia-save-record'],
     mutationFn: saveRecordFn,
   });
 
@@ -36,7 +61,7 @@ const useAlgolia = (props: Props) => {
   };
 
   const searchMutation = useMutation({
-    mutationKey: ["algolia-search", props?.index],
+    mutationKey: ['algolia-search', props?.index],
     mutationFn: searchFn,
   });
 
@@ -47,7 +72,7 @@ const useAlgolia = (props: Props) => {
   };
 
   const deleteRecordMutation = useMutation({
-    mutationKey: ["delete-algolia-record"],
+    mutationKey: ['delete-algolia-record'],
     mutationFn: deleteRecordFn,
   });
 
@@ -60,6 +85,10 @@ const useAlgolia = (props: Props) => {
     saveRecordMutation,
     deleteRecord,
     deleteRecordMutation,
+    getRecordSetting,
+    getSettingsMutation,
+    setRecordSetting,
+    setSettingsMutation,
   };
 };
 

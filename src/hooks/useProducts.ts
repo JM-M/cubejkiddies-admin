@@ -10,6 +10,7 @@ import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
 import { getProductImages } from './useProductImages';
 import useCategories from './useCategories';
 import useFirestoreDocumentDeletion from './useFirestoreDocumentDeletion';
+import { isEqual } from 'lodash';
 
 export interface SortOption {
   field: string;
@@ -65,7 +66,8 @@ const useProducts = (props: Props = {}) => {
     const record: any = {
       name,
       description,
-      category: getCategoryNameFromValue(category),
+      categoryName: getCategoryNameFromValue(category),
+      category,
       price,
       discount,
       variations: recordVariations,
@@ -76,11 +78,41 @@ const useProducts = (props: Props = {}) => {
     return record;
   };
 
+  const generateProductRecordSettings = ({
+    existingSettings,
+    record,
+  }: {
+    existingSettings: any;
+    record: any;
+  }) => {
+    const existingAttributesForFaceting =
+      existingSettings.attributesForFaceting || [];
+    const newAttributesForFaceting = ['category'];
+
+    // merge new and existinf attributesForFaceting and remove duplicates
+    const attributesForFaceting = [
+      ...new Set([
+        ...existingAttributesForFaceting,
+        ...newAttributesForFaceting,
+      ]),
+    ];
+
+    const noUpdates = isEqual(
+      attributesForFaceting,
+      existingAttributesForFaceting
+    );
+
+    if (noUpdates) return undefined;
+
+    return { attributesForFaceting };
+  };
+
   const { firestoreDocumentMutation: productMutation } =
     useFirestoreDocumentMutation({
       collectionName,
-      createAlgoliaRecord: true,
       generateAlgoliaRecord: generateRecordFromProduct,
+      generateAlgoliaIndexSettings: generateProductRecordSettings,
+      onSuccess: () => ionRouter.push('/products'),
     });
 
   const productsQuery = useFirestoreCollectionQuery({

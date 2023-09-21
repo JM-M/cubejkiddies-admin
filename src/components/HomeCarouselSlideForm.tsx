@@ -81,9 +81,9 @@ const HomeCarouselSlideForm: React.FC<Props> = ({ homeSlideId = '' }) => {
     if (button) {
       slide.buttonText = buttonText;
       if (buttonLinkType === 'category') {
-        slide.buttonHref = `/category${category}`;
+        slide.buttonHref = `/store/category${category}`;
       } else if (buttonLinkType === 'product') {
-        slide.buttonHref = `/products/${(product as any)?.id}`;
+        slide.buttonHref = `/store/products/${(product as any)?.id}`;
       }
     }
     if (homeSlideId) slide.id = homeSlideId;

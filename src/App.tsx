@@ -104,13 +104,13 @@ const App: React.FC = () => {
                     <Route exact path='/home-slider' component={HomeSlider} />
                     <Route
                       exact
-                      path='/home-slider/new'
-                      component={NewHomeSlide}
+                      path='/home-slider/:homeSlideId/edit'
+                      component={EditHomeSlide}
                     />
                     <Route
                       exact
-                      path='/home-slider/:homeSlideId'
-                      component={EditHomeSlide}
+                      path='/home-slider/new'
+                      component={NewHomeSlide}
                     />
                     <Route
                       exact

@@ -57,27 +57,31 @@ const ImageUpload: React.FC<Props> = ({
           src = value;
         }
         return (
-          <div className="mb-5">
+          <div className='mb-5'>
             <div
               style={{ aspectRatio }}
-              className="flex justify-center items-center bg-gray-50 border border-gray-500 border-dashed rounded-xl overflow-hidden"
+              className='flex justify-center items-center bg-gray-50 border border-gray-500 border-dashed rounded-xl overflow-hidden'
             >
               {src ? (
-                <IonImg src={src} alt={name} />
+                <IonImg
+                  src={src}
+                  alt={name}
+                  className='h-full w-full bg-gray-200 object-cover'
+                />
               ) : (
                 <Button onClick={chooseImage}>
-                  <IonIcon icon={camera} className="inline-block mr-2" />
+                  <IonIcon icon={camera} className='inline-block mr-2' />
                   Choose image
                 </Button>
               )}
             </div>
             {!!src && (
               <Button
-                fill="outline"
-                className="block w-fit mt-2 ml-auto"
+                fill='outline'
+                className='block w-fit mt-2 ml-auto'
                 onClick={chooseImage}
               >
-                <IonIcon icon={camera} className="inline-block mr-2" />
+                <IonIcon icon={camera} className='inline-block mr-2' />
                 Change image
               </Button>
             )}
