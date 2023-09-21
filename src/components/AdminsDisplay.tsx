@@ -7,8 +7,8 @@ import PageLoader from './PageLoader';
 
 const AdminsDisplay = () => {
   const { admins, adminsQuery } = useAdmins();
-  const { isLoading, fetchNextPage, fetchPreviousPage, totalPages } =
-    adminsQuery;
+  const { isLoading, fetchNextPage, fetchPreviousPage, data } = adminsQuery;
+  const { totalPages } = data;
 
   if (isLoading) return <PageLoader />;
 

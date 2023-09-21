@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import isHotkey from 'is-hotkey';
 import { Editable, withReact, Slate } from 'slate-react';
-import { createEditor } from 'slate';
+import { BaseOperation, createEditor } from 'slate';
 import { withHistory } from 'slate-history';
 import {
   AiOutlineBold,
@@ -60,7 +60,7 @@ const SlateEditor: React.FC<Props> = ({
       onChange={(value) => {
         if (onChange && typeof onChange === 'function') {
           const isAstChange = editor.operations.some(
-            (op) => 'set_selection' !== op.type
+            (op: BaseOperation) => 'set_selection' !== op.type
           );
           if (isAstChange) {
             onChange(returnText ? serializeToText(value) : value);

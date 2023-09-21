@@ -61,7 +61,7 @@ export const isBlockActive = (editor: any, format: any, blockType = 'type') => {
   const [match] = Array.from(
     Editor.nodes(editor, {
       at: Editor.unhangRange(editor, selection),
-      match: (n) =>
+      match: (n: Node) =>
         !Editor.isEditor(n) &&
         SlateElement.isElement(n) &&
         (n as any)[blockType] === format,
