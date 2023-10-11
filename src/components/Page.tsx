@@ -45,7 +45,7 @@ const Page = ({
               </IonButton>
             </IonButtons>
           )}
-          <IonTitle>{title}</IonTitle>
+          <IonTitle className='ion-no-padding'>{title}</IonTitle>
         </IonToolbar>
       </IonHeader>
       {children}

@@ -57,7 +57,7 @@ const useAdmins = (props: Props = {}) => {
 
   const createAdminFn = async (adminData: AdminSignUp) => {
     const { data } = await axios.post(
-      `${import.meta.env.VITE_BACKEND_URL_DEV}/admins`,
+      `${import.meta.env.VITE_BACKEND_URL}/create-admin`,
       adminData
     );
     return data;

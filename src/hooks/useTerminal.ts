@@ -1,5 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  getCountries,
+  getStates,
+  getCities,
+  createAddress,
+  setDefaultSenderAddress,
+  getDefaultSenderAddress,
+  updateAddress,
+} from '../utils/terminal';
 
 type Country = { name: string; isoCode: string };
 
@@ -8,56 +16,71 @@ interface Props {
   stateIsoCode?: string;
 }
 
-const TERMINAL_API_KEY = "sk_live_ewf13L3iikIiZ1ERRDNcJxWtXcKoSPwq";
-
-const axiosInstance = axios.create({
-  baseURL: "https://api.terminal.africa/v1/",
-  headers: {
-    Authorization: `Bearer ${TERMINAL_API_KEY}`,
-    "Content-Type": "application/json",
-  },
-});
-
 const useTerminal = (props: Props = {}) => {
-  const { countryIsoCode = "NG", stateIsoCode = "" } = props;
+  const { countryIsoCode = 'NG', stateIsoCode = '' } = props;
+
+  const queryClient = useQueryClient();
+
   const countriesQuery = useQuery({
-    queryKey: ["countries"],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get("countries");
-      if (!data.status) {
-        throw new Error(data.message || "An error occurred");
-      }
-      return data.data;
-    },
+    queryKey: ['terminal-countries'],
+    queryFn: getCountries,
     staleTime: Infinity,
   });
 
   const statesQuery = useQuery({
-    queryKey: ["states", countryIsoCode],
+    queryKey: ['terminal-states', countryIsoCode],
     queryFn: async () => {
-      const { data } = await axiosInstance.get("states", {
-        params: { country_code: countryIsoCode },
-      });
-      if (!data.status) {
-        throw new Error(data.message || "An error occurred");
-      }
-      return data.data;
+      const res = await getStates({ country_code: countryIsoCode });
+      return res;
     },
     staleTime: Infinity,
   });
 
   const citiesQuery = useQuery({
-    queryKey: ["cities", countryIsoCode, stateIsoCode],
+    queryKey: ['terminal-cities', countryIsoCode, stateIsoCode],
     queryFn: async () => {
-      const { data } = await axiosInstance.get("cities", {
-        params: { country_code: countryIsoCode, state_code: stateIsoCode },
+      const res = await getCities({
+        country_code: countryIsoCode,
+        state_code: stateIsoCode,
       });
-      if (!data.status) {
-        throw new Error(data.message || "An error occurred");
-      }
-      return data.data;
+      return res;
     },
     staleTime: Infinity,
+  });
+
+  const defaultSenderAddressQuery = useQuery({
+    queryKey: ['terminal-get-default-sender-address'],
+    queryFn: async () => {
+      try {
+        const res = await getDefaultSenderAddress();
+        return res;
+      } catch (error) {
+        return null;
+      }
+    },
+    staleTime: Infinity,
+  });
+  const defaultSenderAddress = defaultSenderAddressQuery.data;
+
+  const defaultSenderAddressMutation = useMutation({
+    mutationKey: ['terminal-set-default-sender-address'],
+    mutationFn: async (addressData: any) => {
+      if (defaultSenderAddressQuery.isLoading) return;
+      if (!defaultSenderAddress) {
+        const address = await createAddress(addressData);
+        await setDefaultSenderAddress(address.address_id);
+      } else {
+        await updateAddress({
+          data: addressData,
+          id: defaultSenderAddress!.address_id,
+        });
+      }
+      return 'success';
+    },
+    onSuccess: () => {
+      if (!defaultSenderAddress)
+        queryClient.invalidateQueries(['terminal-get-default-sender-address']);
+    },
   });
 
   const getCountryFromIsoCode = (isoCode: string) => {
@@ -72,12 +95,22 @@ const useTerminal = (props: Props = {}) => {
     return states.find((state: Country) => state.isoCode === isoCode);
   };
 
+  const getStateFromName = (name: string) => {
+    const states = statesQuery.data;
+    if (statesQuery.isLoading || !states.length) return false;
+    return states.find((state: Country) => state.name === name);
+  };
+
   return {
     countriesQuery,
     statesQuery,
     citiesQuery,
     getCountryFromIsoCode,
     getStateFromIsoCode,
+    getStateFromName,
+    defaultSenderAddressMutation,
+    defaultSenderAddressQuery,
+    defaultSenderAddress,
   };
 };
 

@@ -78,6 +78,10 @@ const useFirestoreDocumentMutation = ({
     onSuccess: ({ data, documentId }) => {
       onSuccess(data);
       if (invalidateCollectionQuery) {
+        queryClient.setQueryData(
+          ['document', { collectionName, documentId }],
+          data
+        );
         queryClient.invalidateQueries(['collection', collectionName]);
       }
       if (invalidateDocumentQuery) {

@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../firebase';
+import { storage } from '../../firebase';
 
 const useFirebaseStorage = () => {
   const uploadToFirebaseStorage = async ({
@@ -31,14 +30,6 @@ const useFirebaseStorage = () => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           onUploadProgress(progress);
-          // switch (snapshot.state) {
-          //   case 'paused':
-          //     console.log('Upload is paused');
-          //     break;
-          //   case 'running':
-          //     console.log('Upload is running');
-          //     break;
-          // }
         },
         (error) => {
           reject(error);

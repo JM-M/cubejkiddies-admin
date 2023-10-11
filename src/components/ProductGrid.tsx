@@ -1,8 +1,8 @@
-import { IonButton, IonSpinner } from "@ionic/react";
-import ProductCard from "./ProductCard";
-import PageLoader from "./PageLoader";
-import { SortOption } from "../hooks/useProducts";
-import { Product } from "../constants/schemas/product";
+import { IonButton, IonSpinner } from '@ionic/react';
+import ProductCard from './ProductCard';
+import PageLoader from './PageLoader';
+import { SortOption } from '../hooks/useProducts';
+import { Product } from '../constants/schemas/product';
 
 interface Props {
   sortBy?: SortOption;
@@ -32,7 +32,7 @@ const ProductGrid = ({
 
   return (
     <>
-      <ul className="grid grid-cols-2 gap-5">
+      <ul className='grid grid-cols-2 gap-5'>
         {products.map((product: Product, i: number) => {
           const selected = !!(
             initialSelection?.length &&
@@ -46,7 +46,7 @@ const ProductGrid = ({
                 controlled={!multiselect}
                 selectable={selectable}
                 onSelectionChange={(selection) =>
-                  typeof onSelectionChange === "function" &&
+                  typeof onSelectionChange === 'function' &&
                   onSelectionChange(selection, product)
                 }
               />
@@ -56,16 +56,16 @@ const ProductGrid = ({
       </ul>
       {hasMore && (
         <IonButton
-          color="secondary"
-          className="block w-fit mx-auto my-5"
+          color='secondary'
+          className='block w-fit mx-auto my-5'
           onClick={() => onLoadMore()}
         >
           {loadingMore ? (
             <>
-              <IonSpinner name="dots" className="inline-block" /> Loading...
+              <IonSpinner name='dots' className='inline-block' /> Loading...
             </>
           ) : (
-            "Load more"
+            'Load more'
           )}
         </IonButton>
       )}

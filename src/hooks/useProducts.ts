@@ -8,9 +8,10 @@ import useFirestoreDocumentMutation from './useFirestoreDocumentMutation';
 import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
 import useFirestoreDocumentQuery from './useFirestoreDocumentQuery';
 import { getProductImages } from './useProductImages';
-import useCategories from './useCategories';
+import useCategories, { Category } from './useCategories';
 import useFirestoreDocumentDeletion from './useFirestoreDocumentDeletion';
 import { isEqual } from 'lodash';
+import useCollectionInfiniteQuery from './useCollectionInfiniteQuery';
 
 export interface SortOption {
   field: string;
@@ -31,7 +32,8 @@ const useProducts = (props: Props = {}) => {
 
   const { uploadToFirebaseStorage } = useFirebaseStorage();
 
-  const { getCategoryNameFromValue } = useCategories();
+  const { getCategoryNameFromValue, getCategoryFromId, getCategoryFromValue } =
+    useCategories();
 
   const formatRecordText = (text: string) =>
     text.replaceAll(' ', '_').toLowerCase();
@@ -41,6 +43,24 @@ const useProducts = (props: Props = {}) => {
     const { id, name, category, price, discount, variations, description } =
       product;
     const images = getProductImages(product) || [];
+
+    const categoryObject: Category = getCategoryFromId(category);
+    if (!categoryObject)
+      throw new Error(
+        'An error occurred while generating record: Unable to find product category object'
+      );
+
+    const categoryLevelIds = categoryObject.value
+      .split('/')
+      .filter((v: string) => v)
+      .reduce(
+        (levels: string[], curr: string) => [
+          ...levels,
+          (levels[levels.length - 1] || '') + '/' + curr,
+        ],
+        []
+      )
+      .map((value: string) => getCategoryFromValue(value)?.id);
 
     // extract only the name of each variation [{name: <variation name>}, ...] -> [<variation_name>, ...]
     const recordVariations = Object.keys(variations).reduce(
@@ -66,7 +86,6 @@ const useProducts = (props: Props = {}) => {
     const record: any = {
       name,
       description,
-      categoryName: getCategoryNameFromValue(category),
       category,
       price,
       discount,
@@ -75,6 +94,9 @@ const useProducts = (props: Props = {}) => {
       stocks,
     };
     if (images?.length) record.image = images[0];
+    categoryLevelIds.forEach((id: string, i: number) => {
+      record[`category_level_${i + 1}`] = id;
+    });
     return record;
   };
 
@@ -87,7 +109,11 @@ const useProducts = (props: Props = {}) => {
   }) => {
     const existingAttributesForFaceting =
       existingSettings.attributesForFaceting || [];
-    const newAttributesForFaceting = ['category'];
+
+    const categoryLevels = [...Array(25)].map(
+      (_, i) => `category_level_${i + 1}`
+    );
+    const newAttributesForFaceting = ['category', ...categoryLevels];
 
     // merge new and existinf attributesForFaceting and remove duplicates
     const attributesForFaceting = [
@@ -115,13 +141,19 @@ const useProducts = (props: Props = {}) => {
       onSuccess: () => ionRouter.push('/products'),
     });
 
-  const productsQuery = useFirestoreCollectionQuery({
+  // const productsQuery = useFirestoreCollectionQuery({
+  //   collectionName,
+  //   orderByField: sortBy.field,
+  //   reverseOrder: sortBy.reverse,
+  //   options: {
+  //     pageSize: 10,
+  //   },
+  // });
+
+  const productsQuery = useCollectionInfiniteQuery({
     collectionName,
-    orderByField: sortBy.field,
-    reverseOrder: sortBy.reverse,
-    options: {
-      pageSize: 10,
-    },
+    orderByField: 'createdAt',
+    pageSize: 10,
   });
 
   const saveProductImage = async ({

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { listOutline, gridOutline } from 'ionicons/icons';
 import DisplayController from './DisplayController';
 import QueryController from './QueryController';
@@ -24,6 +24,7 @@ interface Props {
 }
 
 const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
+  const [pageNum, setPageNum] = useState<number>(1);
   const [display, setDisplay] = useState<'list' | 'grid'>('list');
   const [sortOption, setSortOption] = useState<string>();
 
@@ -34,26 +35,37 @@ const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
 
   const sortBy = sortOption ? SORT_OPTIONS[sortOption] : undefined;
 
+  const { productsQuery } = useProducts({ sortBy });
   const {
-    productsQuery: {
-      data = {},
-      isLoading,
-      fetchNextPage,
-      fetchPreviousPage,
-      page,
-    },
-  } = useProducts({ sortBy });
-  const { hasNextPage = false, totalPages = 1 } = data;
+    data = {},
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+  } = productsQuery;
+  const { allDocs = [], totalPages, pages = [] } = data as any;
+  const pageProducts = pages[pageNum - 1]?.docs;
+
+  const onTableNext = () => {
+    if (!pages || !hasNextPage || pageNum >= totalPages) return;
+    const nextPage = pageNum + 1;
+    if (nextPage > pages?.length) fetchNextPage();
+    setPageNum(nextPage);
+  };
+
+  const onTablePrev = () => {
+    if (pageNum > 1) setPageNum(pageNum - 1);
+  };
 
   let products;
   switch (display) {
     case 'grid':
       products = (
         <ProductGrid
-          products={data?.docs || []}
-          initialLoading={isLoading && page === 1}
+          products={allDocs}
+          initialLoading={isLoading}
           onLoadMore={fetchNextPage}
-          loadingMore={isLoading && page > 1}
+          loadingMore={isFetching}
           hasMore={hasNextPage}
           sortBy={sortBy}
           multiselect={multiselect}
@@ -64,11 +76,11 @@ const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
     default:
       products = (
         <ProductTable
-          products={data?.docs || []}
-          onPageNext={fetchNextPage}
-          onPagePrev={fetchPreviousPage}
+          products={pageProducts}
+          onPageNext={onTableNext}
+          onPagePrev={onTablePrev}
           totalPages={totalPages}
-          loading={isLoading}
+          loading={isLoading || (!pageProducts && isFetching)}
           multiselect={multiselect}
           {...props}
         />
@@ -82,6 +94,9 @@ const ProductsDisplay = ({ multiselect = true, ...props }: Props) => {
           indexName='products'
           hitComponent={ProductSearchHit}
           placeholder='Search products'
+          multiselect={multiselect}
+          onSelectionChange={props.onSelectionChange}
+          {...props}
         />
       </div>
       <div className='flex justify-between my-5'>

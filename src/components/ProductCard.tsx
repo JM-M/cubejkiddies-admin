@@ -22,7 +22,7 @@ const ProductCard = ({
   selected: externalSelected = false,
   controlled = false,
 }: Props) => {
-  const { name, price, category, stocks = [], id } = product;
+  const { name, price, category, stocks = [], id, discount } = product;
 
   const [selected, setSelected] = useState<boolean>(externalSelected);
 
@@ -33,7 +33,8 @@ const ProductCard = ({
 
   const selectionChangeHandlerRef = useRef<Function>(onSelectionChange);
 
-  const { getCategoryNameFromValue } = useCategories();
+  const { getCategoryFromId } = useCategories();
+  const categoryName = getCategoryFromId(category)?.name;
 
   const clickHandler = () => {
     if (!selectable) return;
@@ -56,6 +57,8 @@ const ProductCard = ({
 
   const image =
     stocks.length && stocks[0].images?.length && stocks[0].images[0];
+
+  const discountedPrice = discount && price - price * (discount / 100);
 
   return (
     <div
@@ -82,16 +85,29 @@ const ProductCard = ({
           )}
         </div>
       </Link>
-      <div className={cx('flex justify-between', { 'p-1': selectable })}>
-        <div className='flex flex-col'>
+      <div>
+        <div>
           <span className='block font-medium'>{name}</span>
-          <span className='text-xs text-gray-500'>
-            {getCategoryNameFromValue(category)}
-          </span>
         </div>
-        <span className='text-base'>
-          {NAIRA} {price}
-        </span>
+        <div>
+          <span className='text-xs text-gray-500'>{categoryName}</span>
+        </div>
+        <div className='flex gap-2'>
+          <span
+            className={cx('inline-block -mb-[2px] text-base', {
+              'line-through text-gray-700': discountedPrice,
+            })}
+          >
+            {NAIRA}
+            {price.toLocaleString()}
+          </span>
+          {discountedPrice && (
+            <span className='inline-block -mb-[2px] text-base'>
+              {NAIRA}
+              {discountedPrice.toLocaleString()}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

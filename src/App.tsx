@@ -33,6 +33,7 @@ import Contact from './pages/Contact';
 import ContactMessages from './pages/ContactMessages';
 import Admins from './pages/Admins';
 import CreateAdmin from './pages/CreateAdmin';
+import Logistics from './pages/Logistics';
 import Admin from './pages/Admin';
 
 import SideMenu from './components/SideMenu';
@@ -133,11 +134,12 @@ const App: React.FC = () => {
                       component={CreateCategoryProductSelection}
                     />
                     <Route exact path='/categories' component={Categories} />
-                    <Route
+                    {/* <Route
                       exact
                       path='/delivery-prices'
                       component={DeliveryPrices}
-                    />
+                    /> */}
+                    <Route exact path='/logistics' component={Logistics} />
                     <Route exact path='/admins' component={Admins} />
                     {/* <Route exact path='/admins/:uid' component={Admin} /> */}
                     <Route exact path='/admins/new' component={CreateAdmin} />

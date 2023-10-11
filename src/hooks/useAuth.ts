@@ -75,7 +75,7 @@ const useAuth = () => {
     documentId: uid,
     onSuccess: onAdminDocFetch,
   });
-  const isLoggedIn = !autoAuthenticating && !!uid;
+  const isLoggedIn = !autoAuthenticating && !!uid && admin;
 
   useEffect(() => {
     const pathname = ionRouter?.routeInfo.pathname;

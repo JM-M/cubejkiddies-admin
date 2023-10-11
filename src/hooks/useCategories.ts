@@ -62,8 +62,8 @@ const useCategories = (props: Props | undefined = {}) => {
   };
 
   const getChildCategories = (value: string) => {
-    if (!categoriesQuery.data?.length) return [];
-    return categoriesQuery.data.filter((category: Category) => {
+    if (!categoriesQuery.data?.docs?.length) return [];
+    return categoriesQuery.data.docs.filter((category: Category) => {
       const { parent } = category;
       return parent === value;
     });
@@ -80,8 +80,14 @@ const useCategories = (props: Props | undefined = {}) => {
       .replaceAll(' ', '-')
       .toLowerCase()}`;
 
+  const getCategoryFromValue = (value: string) =>
+    categoriesQuery.data?.docs?.find((c: Category) => c.value === value);
+
   const getCategoryNameFromValue = (value: string) =>
-    categoriesQuery.data?.docs?.find((c: Category) => c.value === value)?.name;
+    getCategoryFromValue(value)?.name;
+
+  const getCategoryFromId = (id: string) =>
+    categoriesQuery.data?.docs?.find((c: Category) => c.id === id);
 
   return {
     categoriesQuery,
@@ -91,7 +97,9 @@ const useCategories = (props: Props | undefined = {}) => {
     deletionMutation: firestoreDocumentDeletion,
     getChildCategories,
     createCategoryValueFromName,
+    getCategoryFromValue,
     getCategoryNameFromValue,
+    getCategoryFromId,
   };
 };
 

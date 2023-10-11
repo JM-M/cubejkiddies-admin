@@ -68,11 +68,11 @@ const ProductSectionForm = ({ sectionId }: Props) => {
     setValue('title', title);
   }, [productSection]);
 
-  const { productsQuery } = useProductSection(productSection);
+  const { productSectionProductsQuery } = useProductSection(productSection);
 
   useEffect(() => {
-    const { data } = productsQuery;
-    const products = data?.docs || [];
+    const { data } = productSectionProductsQuery;
+    const products = data?.allDocs || [];
     if (isEqual(products, watch('products'))) return;
     if (
       !productSection ||
@@ -82,7 +82,7 @@ const ProductSectionForm = ({ sectionId }: Props) => {
     )
       return;
     setValue('products', products);
-  }, [productsQuery, watch]);
+  }, [productSectionProductsQuery, watch]);
 
   const onSubmit = (values: ProductSection) => {
     if (sectionId) return saveProductSection({ ...values, id: sectionId });
@@ -104,7 +104,8 @@ const ProductSectionForm = ({ sectionId }: Props) => {
   const submitting =
     productSectionMutation.isLoading || sectionProductMutation.isLoading;
 
-  const loading = productSectionQuery.isLoading || productsQuery.isLoading;
+  const loading =
+    productSectionQuery.isLoading || productSectionProductsQuery.isLoading;
   if (loading) return <PageLoader />;
 
   return (

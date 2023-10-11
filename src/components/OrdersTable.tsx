@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { useIonRouter } from "@ionic/react";
-import { createColumnHelper } from "@tanstack/react-table";
-import { Timestamp } from "firebase/firestore";
-import { formatDistance } from "date-fns";
-import Table from "./Table";
-import Status from "./Status";
-import PageLoader from "./PageLoader";
-import useOrders from "../hooks/useOrders";
-import { Order } from "../hooks/useOrders";
+import { useState } from 'react';
+import { useIonRouter } from '@ionic/react';
+import { createColumnHelper } from '@tanstack/react-table';
+import { Timestamp } from 'firebase/firestore';
+import { formatDistance } from 'date-fns';
+import Table from './Table';
+import Status from './Status';
+import PageLoader from './PageLoader';
+import useOrders from '../hooks/useOrders';
+import { Order } from '../hooks/useOrders';
 
 const columnHelper = createColumnHelper<Order>();
 
 const columns = [
-  columnHelper.accessor("id", {
-    header: "Order ID",
-    cell: (id) => <span className="font-medium">#{id.getValue()}</span>,
+  columnHelper.accessor('id', {
+    header: 'Order ID',
+    cell: (id) => <span className='font-medium'>#{id.getValue()}</span>,
   }),
-  columnHelper.accessor("createdAt", {
-    header: "Date",
+  columnHelper.accessor('createdAt', {
+    header: 'Date',
     cell: ({
       row: {
         original: { createdAt },
@@ -28,16 +28,17 @@ const columns = [
       });
     },
   }),
-  columnHelper.accessor("statusEvents", {
-    header: "Status",
+  columnHelper.accessor('statusEvents', {
+    header: 'Status',
     cell: ({
       row: {
-        original: { statusEvents = [] },
+        original: { statusEvents = [], terminalOrderPlaced, paymentVerified },
       },
     }) => {
       if (!statusEvents?.length) return null;
       const { status } = statusEvents[statusEvents.length - 1];
-      return <Status status={status} />;
+      const error = !terminalOrderPlaced || !paymentVerified ? 'error' : null;
+      return <Status status={error || status} />;
     },
   }),
 ];

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   IonButton,
   IonButtons,
@@ -15,9 +15,10 @@ import {
   IonLabel,
   IonIcon,
   IonText,
-} from "@ionic/react";
-import { closeOutline } from "ionicons/icons";
-import cx from "classnames";
+  IonSpinner,
+} from '@ionic/react';
+import { closeOutline } from 'ionicons/icons';
+import cx from 'classnames';
 
 interface TypeaheadProps {
   name: string;
@@ -28,6 +29,7 @@ interface TypeaheadProps {
   closeModal?: () => void;
   onSelectionChange?: (item?: any) => void;
   error: any;
+  loading?: boolean;
   disabled?: boolean;
 }
 
@@ -40,8 +42,15 @@ const Typeahead = ({
   onSelectionChange = () => null,
   error,
   disabled = false,
+  loading = false,
 }: TypeaheadProps) => {
   const [filteredItems, setFilteredItems] = useState<any[]>([...items]);
+
+  const searchQueryRef = useRef<string>(value || '');
+
+  useEffect(() => {
+    filterList(searchQueryRef.current);
+  }, [items]);
 
   const categoriesModal = useRef<HTMLIonModalElement>(null);
 
@@ -66,50 +75,62 @@ const Typeahead = ({
    * query is provided, all data
    * will be rendered.
    */
-  const filterList = (searchQuery: string | null | undefined) => {
-    /**
-     * If no search query is defined,
-     * return all options.
-     */
-    if (searchQuery === undefined || searchQuery === null) {
-      setFilteredItems([...items]);
-    } else {
+  const filterList = useCallback(
+    (searchQuery: string | null | undefined) => {
       /**
-       * Otherwise, normalize the search
-       * query and check to see which items
-       * contain the search query as a substring.
+       * If no search query is defined,
+       * return all options.
        */
-      const normalizedQuery = searchQuery.toLowerCase();
-      setFilteredItems(
-        items.filter((item) => {
-          return item.text.toLowerCase().includes(normalizedQuery);
-        })
-      );
-    }
-  };
+      if (searchQuery === undefined || searchQuery === null) {
+        setFilteredItems([...items]);
+      } else {
+        /**
+         * Otherwise, normalize the search
+         * query and check to see which items
+         * contain the search query as a substring.
+         */
+        const normalizedQuery = searchQuery.toLowerCase();
+        setFilteredItems(
+          items.filter((item) => {
+            return item.text.toLowerCase().includes(normalizedQuery);
+          })
+        );
+        searchQueryRef.current = searchQuery;
+      }
+    },
+    [items]
+  );
+
+  const selectedItemText = items.find((item) => item.value === value)?.text;
 
   return (
     <>
       <IonItem
         className={cx({
-          "ion-invalid": !!error,
-          "ion-valid": !error,
+          'ion-invalid': !!error,
+          'ion-valid': !error,
+          'pointer-events-none opacity-50': disabled || loading,
         })}
         button={true}
         detail={false}
         id={`select-${name}`}
-        disabled={disabled}
       >
-        <IonLabel>Category</IonLabel>
-        <div slot="end" id={`selected-${name}`}>
-          {value}
+        <IonLabel>
+          {loading ? (
+            <IonSpinner name='crescent' className='h-[20px] w-[20px]' />
+          ) : (
+            title
+          )}
+        </IonLabel>
+        <div slot='end' id={`selected-${name}`}>
+          {!!selectedItemText && selectedItemText}
         </div>
       </IonItem>
       {error && (
         <IonText
-          color="danger"
-          slot="end"
-          className="block pt-1 text-left text-xs border-t border-[var(--ion-color-danger)]"
+          color='danger'
+          slot='end'
+          className='block pt-1 mx-4 text-left text-xs border-t border-[var(--ion-color-danger)]'
         >
           {error?.message}
         </IonText>
@@ -117,20 +138,20 @@ const Typeahead = ({
       <IonModal trigger={`select-${name}`} ref={categoriesModal}>
         <IonHeader>
           <IonToolbar>
-            <IonButtons slot="start">
+            <IonButtons slot='start'>
               <IonButton onClick={cancelChanges}>
-                <IonIcon icon={closeOutline} className="h-[24px] w-[24px]" />
+                <IonIcon icon={closeOutline} className='h-[24px] w-[24px]' />
               </IonButton>
             </IonButtons>
             <IonTitle>{title}</IonTitle>
           </IonToolbar>
           <IonToolbar>
-            <IonSearchbar onIonInput={searchbarInput}></IonSearchbar>
+            <IonSearchbar onIonInput={searchbarInput} autoFocus></IonSearchbar>
           </IonToolbar>
         </IonHeader>
 
-        <IonContent color="light" class="ion-padding">
-          <IonList id="modal-list" inset={true}>
+        <IonContent color='light' class='ion-padding'>
+          <IonList id='modal-list' inset={true}>
             <IonRadioGroup
               {...register(name)}
               value={value}
@@ -139,8 +160,8 @@ const Typeahead = ({
                 closeModal();
               }}
             >
-              {filteredItems.map((item) => (
-                <IonItem key={item.value}>
+              {filteredItems.map((item, i) => (
+                <IonItem key={i}>
                   <IonRadio value={item.value}>{item.text}</IonRadio>
                 </IonItem>
               ))}

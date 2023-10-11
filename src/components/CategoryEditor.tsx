@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { IonSpinner, IonIcon, IonButton } from '@ionic/react';
 import {
   addOutline,
@@ -68,17 +68,22 @@ const CategoryEditor = ({
   const saving = saveMutation.isLoading;
 
   const childCategories = getChildCategories(value);
+  const hasChildCategories = !!childCategories.length;
 
-  if (categoriesQuery.isFetching) return <PageLoader />;
+  if (categoriesQuery.isLoading) return <PageLoader />;
 
   const header = (
-    <div className='flex items-center gap-5 h-12'>
+    <div className='flex items-center gap-2 h-12'>
       <IonIcon
         icon={open ? caretDownCircle : caretDownCircleOutline}
         color='primary'
         className={cx(
           'h-[24px] w-[24px] transition-transform ease-out duration-300 delay-0',
-          { 'rotate-180': open, 'rotate-0': !open }
+          {
+            'rotate-180': open,
+            'rotate-0': !open,
+            'pointer-events-none opacity-0': !hasChildCategories,
+          }
         )}
         onClick={toggle}
       />
@@ -106,7 +111,7 @@ const CategoryEditor = ({
   );
 
   return (
-    <>
+    <div className='relative'>
       {toBeDeleted && (
         <CategoryDeleteModal
           categoryName={name}
@@ -155,7 +160,7 @@ const CategoryEditor = ({
           )
         )}
       </Expandable>
-    </>
+    </div>
   );
 };
 

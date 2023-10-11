@@ -1,7 +1,8 @@
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-import useFirestoreCollectionQuery from "./useFirestoreCollectionQuery";
-import { DatabaseProductSection } from "./useProductSections";
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
+import { DatabaseProductSection } from './useProductSections';
+import useCollectionInfiniteQuery from './useCollectionInfiniteQuery';
 // import useProducts from './useProducts';
 
 const useProductSection = (
@@ -11,14 +12,14 @@ const useProductSection = (
     // category,
     id,
   } = section || {};
-  const pageSize = 10;
+  const pageSize = 1000;
   const collectionName = `productSections/${id}/products`;
 
   const fetchProducts = async (productIds: { id: string }[]) => {
     if (!id) return [];
     const products = [];
     for (const { id: productId } of productIds) {
-      const docRef = doc(db, "products", productId);
+      const docRef = doc(db, 'products', productId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const product = { ...docSnap.data(), id: productId } as any;
@@ -27,18 +28,25 @@ const useProductSection = (
     }
     return products;
   };
-  const productsQuery = useFirestoreCollectionQuery({
+  // const productsQuery: any = useFirestoreCollectionQuery({
+  //   collectionName,
+  //   options: {
+  //     pageSize,
+  //   },
+  //   transformDocuments: fetchProducts,
+  // });
+
+  const productSectionProductsQuery = useCollectionInfiniteQuery({
     collectionName,
-    options: {
-      pageSize,
-    },
+    pageSize,
     transformDocuments: fetchProducts,
+    orderByField: 'id',
   });
 
   // const { productsQuery: categoryProductsQuery } = useProducts({ category });
 
   return {
-    productsQuery,
+    productSectionProductsQuery,
     // productsQuery: category ? categoryProductsQuery : productsQuery,
   };
 };

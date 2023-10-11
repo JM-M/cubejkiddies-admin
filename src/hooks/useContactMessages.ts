@@ -1,5 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
-import useFirestoreCollectionQuery from './useFirestoreCollectionQuery';
+import useCollectionInfiniteQuery from './useCollectionInfiniteQuery';
 import { User } from './useUsers';
 
 export interface ContactMessage {
@@ -11,12 +11,14 @@ export interface ContactMessage {
 
 const collectionName = 'contactMessages';
 const useContactMessages = () => {
-  const contactMessagesQuery = useFirestoreCollectionQuery({
+  const contactMessagesQuery = useCollectionInfiniteQuery({
     collectionName,
     orderByField: 'createdAt',
-    options: { pageSize: 10 },
+    pageSize: 10,
   });
-  const contactMessages: ContactMessage[] = contactMessagesQuery.data?.docs;
+  const contactMessages: ContactMessage[] =
+    contactMessagesQuery.data?.allDocs || [];
+
   return { contactMessagesQuery, contactMessages };
 };
 

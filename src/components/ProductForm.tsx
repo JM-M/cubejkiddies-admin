@@ -70,7 +70,8 @@ const ProductForm = ({ productId }: Props) => {
   });
   const product = productQuery.data;
 
-  const { categoriesQuery } = useCategories();
+  const { categoriesQuery, getCategoryFromId, getCategoryFromValue } =
+    useCategories();
   const categoryOptions = useMemo(() => {
     if (!categoriesQuery.data?.docs?.length) return [];
     return categoriesQuery.data?.docs
@@ -88,23 +89,18 @@ const ProductForm = ({ productId }: Props) => {
     for (const field in product) {
       if (field === 'id') continue;
       if (Object.prototype.hasOwnProperty.call(product, field)) {
-        const value = product[field];
+        let value = product[field];
+        if (field === 'category') value = getCategoryFromId(value)?.name;
         setValue(field as FieldType, value);
       }
     }
   }, [product, productQuery.isLoading, setValue]);
 
-  const onSubmit = async (product: Product) => {
-    const fakeProduct = createRandomProduct();
-    await saveProduct({
-      product: fakeProduct,
-      productId: fakeProduct.id,
-      onImageUploadProgress: ({ index, progress, total }) => {
-        const bin = 100 / total;
-        setImageUploadProgress(Math.round(bin * (index + progress / 100)));
-      },
-    });
-    return;
+  const onSubmit = async (values: Product) => {
+    const product: Product = {
+      ...values,
+      category: getCategoryFromValue(values?.category)?.id,
+    };
     setUploadingImages(true);
     // upload data
     const returnedProductId = await saveProduct({

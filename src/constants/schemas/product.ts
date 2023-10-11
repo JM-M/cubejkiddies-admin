@@ -5,7 +5,9 @@ const productSchema = object({
   name: string().required(),
   category: string().required(),
   description: string().required(),
-  weight: number().required(),
+  weight: number()
+    .required()
+    .max(100, 'For delivery packages should be 100 or less'),
   price: number().required(),
   discount: number().min(0).max(100),
   variations: object(),

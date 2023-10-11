@@ -6,9 +6,14 @@ export const createRandomProduct = () => {
   const name = faker.commerce.productName();
   const id = uuidv4();
   const category = faker.helpers.arrayElement([
-    '/kids',
-    '/kitchenware',
-    '/adults',
+    '00f6dc99-6b54-4498-b92a-cc91f7d6f819',
+    '38561d9d-e8eb-4edb-bf68-42844278bb81',
+    '567889fe-ec79-451b-be82-ef781506ca41',
+    '735cfaf7-2f47-4e99-962b-1511ebaf4512',
+    '8d56d2a2-a733-4f7d-9a2f-30c834a9544b',
+    'a8b73107-6dd9-452c-b4a4-ef3f21869eb9',
+    'b67f09b2-d977-4e63-afa4-7d3a17b8f86b',
+    'dd97386f-1d9f-4c3d-9b8f-2e4ec375b5c5',
   ]);
   const description = faker.commerce.productDescription();
   const weight = faker.helpers.arrayElement(
