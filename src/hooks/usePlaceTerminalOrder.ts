@@ -85,7 +85,7 @@ const usePlaceTerminalOrder = ({ orderId }: Props) => {
       const updatedProduct = { ...fetchedProduct, stocks: updatedStocks };
       await setFirestoreDocument({
         collectionName: 'products',
-        documentId: id,
+        documentId: id as string,
         document: updatedProduct,
       });
     }
@@ -93,7 +93,7 @@ const usePlaceTerminalOrder = ({ orderId }: Props) => {
     await setFirestoreDocument({
       collectionName: 'pickups',
       document: pickup,
-      documentId: pickup.id || uuidv4(),
+      documentId: (pickup.id || uuidv4()) as string,
     });
 
     await orderMutation.mutateAsync({

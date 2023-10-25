@@ -5,7 +5,7 @@ const setFirestoreDocument = async (docData: {
   collectionName: string;
   document: any;
   documentId: string;
-  addTimestamp: boolean;
+  addTimestamp?: boolean;
 }) => {
   const {
     collectionName,
