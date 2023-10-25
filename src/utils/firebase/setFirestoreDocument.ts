@@ -1,13 +1,18 @@
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../../firebase';
 
-const setFirestoreDocument = async (docData = {}) => {
+const setFirestoreDocument = async (docData: {
+  collectionName: string;
+  document: any;
+  documentId: string;
+  addTimestamp: boolean;
+}) => {
   const {
     collectionName,
     document,
     documentId,
     addTimestamp = false,
-  } = docData;
+  } = docData || {};
   if (!documentId)
     throw new Error('[InternalServerError] No document id provided.');
   if (!document) throw new Error('[InternalServerError] No document provided.');

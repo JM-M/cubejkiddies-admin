@@ -17,7 +17,7 @@ const Order: React.FC<any> = ({ match }) => {
   });
 
   if (orderQuery.isLoading) return <PageLoader />;
-  if (!order) return 'No data found';
+  if (!order) return <>No data found</>;
   const {
     user,
     cart,
