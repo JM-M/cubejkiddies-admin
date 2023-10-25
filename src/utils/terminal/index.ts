@@ -1,9 +1,11 @@
 import axios from 'axios';
 
 export const terminalAPIInstance = axios.create({
-  baseURL: 'https://api.terminal.africa/v1/',
+  // baseURL: 'https://api.terminal.africa/v1/',
+  baseURL: 'https://sandbox.terminal.africa/v1/',
   headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_TERMINAL_SECRET_KEY}`,
+    // Authorization: `Bearer ${import.meta.env.VITE_TERMINAL_SECRET_KEY}`,
+    Authorization: `Bearer ${import.meta.env.VITE_TEST_TERMINAL_SECRET_KEY}`,
     'Content-Type': 'application/json',
   },
 });

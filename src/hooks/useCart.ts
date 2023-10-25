@@ -60,10 +60,14 @@ export const measureCart = (cartProducts: ProductWithCartOptions[]) => {
         (
           prev: { cartSize: number; totalCartValue: number },
           curr: ProductWithCartOptions
-        ) => ({
-          cartSize: curr.qty + prev.cartSize,
-          totalCartValue: curr.qty * curr.price + prev.totalCartValue,
-        }),
+        ) => {
+          let price = curr.price;
+          if (curr?.discount) price = price - price * (curr.discount / 100);
+          return {
+            cartSize: curr.qty + prev.cartSize,
+            totalCartValue: curr.qty * price + prev.totalCartValue,
+          };
+        },
         { cartSize: 0, totalCartValue: 0 }
       )
     : { cartSize: 0, totalCartValue: 0 };

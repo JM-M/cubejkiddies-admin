@@ -27,7 +27,7 @@ const SideMenu = () => {
     { display: 'Home product sections', path: '/home-product-sections' },
     { display: 'Orders', path: '/orders' },
     { display: 'Categories', path: '/categories' },
-    { display: 'Logistics', path: '/logistics' },
+    { display: 'Logistics settings', path: '/logistics' },
     // { display: "Delivery prices", path: "/delivery-prices" },
     { display: 'Home slider', path: '/home-slider' },
     { display: 'About', path: '/about' },

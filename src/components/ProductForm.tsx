@@ -90,7 +90,9 @@ const ProductForm = ({ productId }: Props) => {
       if (field === 'id') continue;
       if (Object.prototype.hasOwnProperty.call(product, field)) {
         let value = product[field];
-        if (field === 'category') value = getCategoryFromId(value)?.name;
+        if (field === 'category') {
+          value = getCategoryFromId(value)?.value;
+        }
         setValue(field as FieldType, value);
       }
     }
@@ -239,7 +241,7 @@ const ProductForm = ({ productId }: Props) => {
         disabled={uploading}
       >
         {uploading && <IonSpinner name='dots' className='inline-block mr-3' />}
-        {uploadingImages
+        {uploadingImages && !isNaN(imageUploadProgress!)
           ? `Uploading images (${imageUploadProgress}%)`
           : uploading
           ? 'Submitting'

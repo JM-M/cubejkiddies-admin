@@ -83,7 +83,7 @@ const ProductSectionCategorySelector: React.FC<Props> = ({ sectionId }) => {
       <Typeahead
         name='category'
         register={register}
-        title='Categories'
+        title='Category'
         items={categoryOptions}
         value={watch('category') || ''}
         onSelectionChange={(category) => {

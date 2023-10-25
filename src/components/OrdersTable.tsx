@@ -37,8 +37,7 @@ const columns = [
     }) => {
       if (!statusEvents?.length) return null;
       const { status } = statusEvents[statusEvents.length - 1];
-      const error = !terminalOrderPlaced || !paymentVerified ? 'error' : null;
-      return <Status status={error || status} />;
+      return <Status status={status} />;
     },
   }),
 ];

@@ -267,7 +267,7 @@ const useProducts = (props: Props = {}) => {
 
     const documentId = productId || uuidv4();
     // save product
-    productMutation.mutate({
+    await productMutation.mutateAsync({
       document: product,
       documentId,
       addTimestamp: true,

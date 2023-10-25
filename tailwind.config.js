@@ -12,6 +12,11 @@ export default {
     'text-orange-500',
     'text-gray-500',
     'text-red-500',
+    'text-blue-700',
+    'text-green-700',
+    'text-orange-700',
+    'text-gray-700',
+    'text-red-700',
     'bg-opacity-10',
   ],
   theme: {
